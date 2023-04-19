@@ -64,7 +64,7 @@ export class OwlDateTimeContainerComponent<T>
     // retain start and end time
     private retainStartTime: T;
     private retainEndTime: T;
-    
+
     /**
      * Stream emits when try to hide picker
      * */
@@ -417,16 +417,20 @@ export class OwlDateTimeContainerComponent<T>
             return null;
         }
 
-        // if the given calendar day is after or equal to 'from',
-        // set ths given date as 'to'
+        // if the given calendar day is after or equal to 'from' or this is the first selected date but activeSelectedIndex was set by user
+        // set the given date as 'to'
         // otherwise, set it as 'from' and set 'to' to null
         if (this.picker.selectMode === 'range') {
             if (
-                this.picker.selecteds &&
-                this.picker.selecteds.length &&
-                !to &&
-                from &&
-                this.dateTimeAdapter.differenceInCalendarDays(result, from) >= 0
+                (this.picker.selecteds &&
+                    this.picker.selecteds.length &&
+                    !to &&
+                    from &&
+                    this.dateTimeAdapter.differenceInCalendarDays(
+                        result,
+                        from
+                    ) >= 0) ||
+                (!to && !from && this.activeSelectedIndex === 1)
             ) {
                 if (this.picker.endAt && !this.retainEndTime) {
                     to = this.dateTimeAdapter.createDate(
