@@ -236,6 +236,12 @@ export class OwlCalendarComponent<T>
      */
     @Input()
     yearOnly = false;
+    
+    /**
+     * Whether to show calendar weeks in the calendar
+     * */
+    @Input()
+    showCalendarWeeks = false;
 
     /**
      * Whether to should only the multi-year view.

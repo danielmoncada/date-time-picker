@@ -236,7 +236,7 @@ $theme-color: #3f51b5;
 }
 
 .owl-dt-calendar-view {
-  display: block;
+  display: flex;
   -webkit-box-flex: 1;
           flex: 1 1 auto;
 }
@@ -286,6 +286,11 @@ $theme-color: #3f51b5;
         right: -.5em;
         height: 1px;
         background: rgba(0, 0, 0, .12);
+      }
+      &.owl-calendar-weeks {
+        &:after {
+          left: -1.8em;
+        }
       }
     }
   }
@@ -372,6 +377,11 @@ $theme-color: #3f51b5;
     &.owl-dt-calendar-cell-range-to {
       border-top-right-radius: 999px;
       border-bottom-right-radius: 999px;
+    }
+  }
+  &.owl-calendar-weeks {
+    .owl-dt-calendar-cell-content {
+      height: 86%; // adjust for the additional space taked for calendar weeks
     }
   }
 }

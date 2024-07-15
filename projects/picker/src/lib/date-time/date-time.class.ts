@@ -62,6 +62,11 @@ export abstract class OwlDateTime<T> {
     @Input()
     startView: DateViewType = DateView.MONTH;
 
+    /**
+     * Whether to show calendar weeks in the calendar
+     * */
+    @Input()
+    showCalendarWeeks = false;
 
     /**
      * Whether to should only the year and multi-year views.

@@ -1,4 +1,9 @@
-<table class="owl-dt-calendar-table owl-dt-calendar-month-table"
+<ul class="week-number" *ngIf="showCalendarWeeks">
+    <li *ngFor="let week of weekNumbers;">
+        <span>{{ week }}</span>
+    </li>
+</ul>
+<table class="owl-dt-calendar-table owl-dt-calendar-month-table" [ngClass]="{'owl-calendar-weeks': showCalendarWeeks}"
        [class.owl-dt-calendar-only-current-month]="hideOtherMonths">
     <thead class="owl-dt-calendar-header">
     <tr class="owl-dt-weekdays">
@@ -9,7 +14,7 @@
         </th>
     </tr>
     <tr>
-        <th class="owl-dt-calendar-table-divider" aria-hidden="true" colspan="7"></th>
+        <th class="owl-dt-calendar-table-divider" [ngClass]="{'owl-calendar-weeks': showCalendarWeeks}" aria-hidden="true" colspan="7"></th>
     </tr>
     </thead>
     <tbody owl-date-time-calendar-body role="grid"
