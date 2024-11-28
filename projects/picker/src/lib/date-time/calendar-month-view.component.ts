@@ -480,8 +480,8 @@ export class OwlMonthViewComponent<T>
         });
 
         this._weekdays = weekdays
-            .slice(firstDayOfWeek)
-            .concat(weekdays.slice(0, firstDayOfWeek));
+            .slice(firstDayOfWeek-this.dateTimeAdapter.firstDayOfTheWeek)
+            .concat(weekdays.slice(0, firstDayOfWeek-this.dateTimeAdapter.firstDayOfTheWeek));
 
         this.dateNames = this.dateTimeAdapter.getDateNames();
 

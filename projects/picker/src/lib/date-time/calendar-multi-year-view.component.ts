@@ -253,7 +253,7 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
     }
 
     private selectYear( year: number ): void {
-        this.yearSelected.emit(this.dateTimeAdapter.createDate(year, 0, 1));
+        this.yearSelected.emit(this.dateTimeAdapter.createDate(year, this.dateTimeAdapter.firstMonthOfTheYear, 1));
         const firstDateOfMonth = this.dateTimeAdapter.createDate(
             year,
             this.dateTimeAdapter.getMonth(this.pickerMoment),
@@ -395,7 +395,7 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
      * Creates an CalendarCell for the given year.
      */
     private createYearCell( year: number ): CalendarCell {
-        const startDateOfYear = this.dateTimeAdapter.createDate(year, 0, 1);
+        const startDateOfYear = this.dateTimeAdapter.createDate(year, this.dateTimeAdapter.firstMonthOfTheYear, 1);
         const ariaLabel = this.dateTimeAdapter.getYearName(startDateOfYear);
         const cellClass = 'owl-dt-year-' + year;
         return new CalendarCell(year, year.toString(), ariaLabel, this.isYearEnabled(year), false, cellClass);
@@ -434,7 +434,7 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
             return true;
         }
 
-        const firstOfYear = this.dateTimeAdapter.createDate(year, 0, 1);
+        const firstOfYear = this.dateTimeAdapter.createDate(year, this.dateTimeAdapter.firstMonthOfTheYear, 1);
 
         // If any date in the year is enabled count the year as enabled.
         for (let date = firstOfYear; this.dateTimeAdapter.getYear(date) === year;
