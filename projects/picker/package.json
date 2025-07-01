@@ -1,39 +1,39 @@
 {
-  "name": "@danielmoncada/angular-datetime-picker",
-  "version": "19.1.2",
-  "description": "Angular Date Time Picker",
-  "keywords": [
-    "Angular",
-    "datepicker",
-    "date picker",
-    "timepicker",
-    "time picker",
-    "datetime picker",
-    "date time picker",
-    "material",
-    "ngx"
-  ],
-  "author": "Maintained and updated by Daniel Moncada, original implementatiom by Daniel Pan",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/danielmoncada/date-time-picker.git"
-  },
-  "homepage": "https://github.com/danielmoncada/date-time-picker",
-  "publishConfig": {
-    "access": "public"
-  },
-  "peerDependencies": {
-    "@angular/common": "^19.0.0",
-    "@angular/core": "^19.0.0",
-    "@angular/cdk": "^19.0.0"
-  },
-  "dependencies": {
-    "tslib": "^2.6.2"
-  },
-  "exports": {
-    "./assets/style/picker.min.css": {
-      "default":  "./assets/style/picker.min.css"
+    "name": "@danielmoncada/angular-datetime-picker",
+    "version": "20.0.0",
+    "description": "Angular Date Time Picker",
+    "keywords": [
+        "Angular",
+        "datepicker",
+        "date picker",
+        "timepicker",
+        "time picker",
+        "datetime picker",
+        "date time picker",
+        "material",
+        "ngx"
+    ],
+    "author": "Maintained and updated by Daniel Moncada, original implementatiom by Daniel Pan",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/danielmoncada/date-time-picker.git"
+    },
+    "homepage": "https://github.com/danielmoncada/date-time-picker",
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "@angular/common": "^19.0.0 || ^20.0.0",
+        "@angular/core": "^19.0.0 || ^20.0.0",
+        "@angular/cdk": "^19.0.0 || ^20.0.0"
+    },
+    "dependencies": {
+        "tslib": "^2.6.2"
+    },
+    "exports": {
+        "./assets/style/picker.min.css": {
+            "default": "./assets/style/picker.min.css"
+        }
     }
-  }
 }

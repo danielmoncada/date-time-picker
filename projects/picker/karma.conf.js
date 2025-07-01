@@ -23,7 +23,30 @@ module.exports = function (config) {
     customLaunchers: {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--disable-extensions',
+          '--remote-debugging-port=9222',
+          '--headless'
+        ]
+      },
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--disable-extensions',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--remote-debugging-port=9222',
+          '--headless'
+        ]
       }
     },
     reporters: ['progress', 'kjhtml'],
@@ -31,7 +54,9 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
-    singleRun: false
+    // Use different browsers based on environment
+    browsers: process.env.CI ? ['ChromeHeadlessCI'] : ['Chrome'],
+    singleRun: process.env.CI ? true : false,
+    restartOnFileChange: false
   });
 };
