@@ -35,7 +35,7 @@
 <label class="owl-dt-timer-content">
     <input
         class="owl-dt-timer-input"
-        maxlength="2"
+        [attr.maxlength]="maxLength"
         [value]="displayValue"
         (keydown.arrowup)="!upBtnDisabled && upBtnClicked()"
         (keydown.arrowdown)="!downBtnDisabled && downBtnClicked()"
