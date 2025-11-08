@@ -3,18 +3,19 @@
  */
 
 import {
-    AfterContentInit,
-    Directive,
-    ElementRef,
-    EventEmitter,
-    forwardRef,
-    Inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output,
-    Renderer2
+  AfterContentInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  inject,
+  input,
+  model,
+  output
 } from '@angular/core';
 import {
     AbstractControl,
@@ -52,7 +53,6 @@ export const OWL_DATETIME_VALIDATORS: any = {
 @Directive({
     selector: 'input[owlDateTime]',
     exportAs: 'owlDateTimeInput',
-    standalone: false,
     host: {
         '(keydown)': 'handleKeydownOnHost($event)',
         '(blur)': 'handleBlurOnHost($event)',
@@ -76,6 +76,11 @@ export class OwlDateTimeInputDirective<T>
         OnDestroy,
         ControlValueAccessor,
         Validator {
+    private elmRef = inject(ElementRef);
+    private renderer = inject(Renderer2);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     static ngAcceptInputType_disabled: boolean|'';
 
      /**
@@ -115,18 +120,17 @@ export class OwlDateTimeInputDirective<T>
     }
 
     /** Whether the date time picker's input is disabled. */
-    @Input()
-    private _disabled: boolean;
+    protected readonly _disabled = model<boolean>(undefined);
     get disabled() {
-        return !!this._disabled;
+        return !!this._disabled();
     }
 
     set disabled(value: boolean) {
         const newValue = coerceBooleanProperty(value);
         const element = this.elmRef.nativeElement;
 
-        if (this._disabled !== newValue) {
-            this._disabled = newValue;
+        if (this._disabled() !== newValue) {
+            this._disabled.set(newValue);
             this.disabledChange.emit(newValue);
         }
 
@@ -188,8 +192,7 @@ export class OwlDateTimeInputDirective<T>
     /**
      * The character to separate the 'from' and 'to' in input value
      */
-    @Input()
-    rangeSeparator = '-';
+    readonly rangeSeparator = input('-');
 
     private _value: T | null;
     @Input()
@@ -244,14 +247,12 @@ export class OwlDateTimeInputDirective<T>
     /**
      * Callback to invoke when `change` event is fired on this `<input>`
      * */
-    @Output()
-    dateTimeChange = new EventEmitter<any>();
+    readonly dateTimeChange = output<any>();
 
     /**
      * Callback to invoke when an `input` event is fired on this `<input>`.
      * */
-    @Output()
-    dateTimeInput = new EventEmitter<any>();
+    readonly dateTimeInput = output<any>();
 
     get elementRef(): ElementRef {
         return this.elmRef;
@@ -455,13 +456,7 @@ export class OwlDateTimeInputDirective<T>
         return this.disabled;
     }
 
-    constructor(
-        private elmRef: ElementRef,
-        private renderer: Renderer2,
-        @Optional()
-        private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional() @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats ) {
+    constructor() {
         if (!this.dateTimeAdapter) {
             throw Error(
                 `OwlDateTimePicker: No provider found for DateTimePicker. You must import one of the following ` +
@@ -638,7 +633,7 @@ export class OwlDateTimeInputDirective<T>
                             'value',
                             fromFormatted +
                                 ' ' +
-                                this.rangeSeparator +
+                                this.rangeSeparator() +
                                 ' ' +
                                 toFormatted
                         );
@@ -792,7 +787,7 @@ export class OwlDateTimeInputDirective<T>
      * Handle input change in range mode
      */
     private changeInputInRangeMode(inputValue: string): void {
-        const selecteds = inputValue.split(this.rangeSeparator);
+        const selecteds = inputValue.split(this.rangeSeparator());
         let fromString = selecteds[0];
         let toString = selecteds[1];
 

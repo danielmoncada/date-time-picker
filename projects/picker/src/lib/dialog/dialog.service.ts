@@ -2,16 +2,7 @@
  * dialog.service
  */
 
-import {
-    ComponentRef,
-    Inject,
-    Injectable,
-    InjectionToken,
-    Injector,
-    Optional,
-    SkipSelf,
-    TemplateRef
-} from '@angular/core';
+import { ComponentRef, Injectable, InjectionToken, Injector, TemplateRef, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { OwlDialogConfig, OwlDialogConfigInterface } from './dialog-config.class';
 import { OwlDialogRef } from './dialog-ref.class';
@@ -63,6 +54,13 @@ export const OWL_DIALOG_DEFAULT_OPTIONS = new InjectionToken<OwlDialogConfig>(
 
 @Injectable()
 export class OwlDialogService {
+    private overlay = inject(Overlay);
+    private injector = inject(Injector);
+    private location = inject(Location, { optional: true })!;
+    private defaultOptions = inject<OwlDialogConfigInterface>(OWL_DIALOG_DEFAULT_OPTIONS, { optional: true })!;
+    private parentDialog = inject(OwlDialogService, { optional: true, skipSelf: true })!;
+    private overlayContainer = inject(OverlayContainer);
+
     private ariaHiddenElements = new Map<Element, string | null>();
 
     private _openDialogsAtThisLevel: OwlDialogRef<any>[] = [];
@@ -112,19 +110,11 @@ export class OwlDialogService {
 
     private readonly scrollStrategy: () => ScrollStrategy;
 
-    constructor(
-        private overlay: Overlay,
-        private injector: Injector,
-        @Optional() private location: Location,
-        @Inject(OWL_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
-        @Optional()
-        @Inject(OWL_DIALOG_DEFAULT_OPTIONS)
-        private defaultOptions: OwlDialogConfigInterface,
-        @Optional()
-        @SkipSelf()
-        private parentDialog: OwlDialogService,
-        private overlayContainer: OverlayContainer
-    ) {
+    constructor() {
+        const location = this.location;
+        const scrollStrategy = inject(OWL_DIALOG_SCROLL_STRATEGY);
+        const parentDialog = this.parentDialog;
+
         this.scrollStrategy = scrollStrategy;
         if (!parentDialog && location) {
             location.subscribe(() => this.closeAll());

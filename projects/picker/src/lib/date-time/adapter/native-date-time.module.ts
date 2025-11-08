@@ -9,6 +9,10 @@ import { NativeDateTimeAdapter } from './native-date-time-adapter.class';
 import { OWL_DATE_TIME_FORMATS } from './date-time-format.class';
 import { OWL_NATIVE_DATE_TIME_FORMATS } from './native-date-time-format.class';
 
+/**
+ * @deprecated Use `provideOwlNativeDateTime()` instead. This module will be removed in v21.0.0.
+ * @see provideOwlNativeDateTime
+ */
 @NgModule({
     imports: [PlatformModule],
     providers: [
@@ -18,6 +22,20 @@ import { OWL_NATIVE_DATE_TIME_FORMATS } from './native-date-time-format.class';
 export class NativeDateTimeModule {
 }
 
+/**
+ * @deprecated Use `provideOwlNativeDateTime()` instead. This module will be removed in v21.0.0.
+ *
+ * Migration guide:
+ * ```typescript
+ * // Before:
+ * import { OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+ * @NgModule({ imports: [OwlNativeDateTimeModule] })
+ *
+ * // After:
+ * import { provideOwlNativeDateTime } from '@danielmoncada/angular-datetime-picker';
+ * providers: [provideOwlNativeDateTime()]
+ * ```
+ */
 @NgModule({
     imports: [NativeDateTimeModule],
     providers: [{provide: OWL_DATE_TIME_FORMATS, useValue: OWL_NATIVE_DATE_TIME_FORMATS}],

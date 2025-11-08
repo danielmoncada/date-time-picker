@@ -43,20 +43,16 @@ const YEARS_PER_ROW = 3;
 describe('OwlMultiYearViewComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [OwlNativeDateTimeModule, OwlDateTimeModule],
-            declarations: [
-                StandardMultiYearViewComponent,
-                MultiYearViewWithDateFilterComponent
-            ],
-            providers: [OwlDateTimeIntl, {
-                provide: OptionsTokens.multiYear,
-                useFactory: () =>
-                    ({
-                        yearRows: YEAR_ROWS,
-                        yearsPerRow: YEARS_PER_ROW,
-                    } as Options['multiYear']),
-            },]
-        }).compileComponents();
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule, StandardMultiYearViewComponent,
+        MultiYearViewWithDateFilterComponent],
+    providers: [OwlDateTimeIntl, {
+            provide: OptionsTokens.multiYear,
+            useFactory: () => ({
+                yearRows: YEAR_ROWS,
+                yearsPerRow: YEARS_PER_ROW,
+            } as Options['multiYear']),
+        },]
+}).compileComponents();
     });
 
     describe('standard multi-years view', () => {
@@ -310,13 +306,13 @@ describe('OwlMultiYearViewComponent', () => {
 });
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-multi-year-view
                 [selected]="selected"
                 [(pickerMoment)]="pickerMoment"
                 (change)="handleChange($event)"></owl-date-time-multi-year-view>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class StandardMultiYearViewComponent {
     selected = new Date(2020, JAN, 10);
@@ -328,12 +324,12 @@ class StandardMultiYearViewComponent {
 }
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-multi-year-view
                 [(pickerMoment)]="pickerMoment"
                 [dateFilter]="dateFilter"></owl-date-time-multi-year-view>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class MultiYearViewWithDateFilterComponent {
     pickerMoment = new Date(2018, JAN, 1);

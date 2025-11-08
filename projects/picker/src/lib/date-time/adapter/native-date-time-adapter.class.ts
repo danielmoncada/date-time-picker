@@ -2,7 +2,7 @@
  * native-date-time-adapter.class
  */
 
-import { Inject, Injectable, Optional } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Platform } from '@angular/cdk/platform';
 import {
     DateTimeAdapter,
@@ -26,6 +26,8 @@ const ISO_8601_REGEX = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|(?
 
 @Injectable()
 export class NativeDateTimeAdapter extends DateTimeAdapter<Date> {
+ 	private owlDateTimeLocale = inject(OWL_DATE_TIME_LOCALE, { optional: true })!;
+
  	public firstMonthOfTheYear: number = 0;
  	public firstDayOfTheWeek: number = 0;
     
@@ -40,13 +42,12 @@ export class NativeDateTimeAdapter extends DateTimeAdapter<Date> {
      */
     useUtcForDisplay: boolean;
 
-    constructor(
-        @Optional()
-        @Inject(OWL_DATE_TIME_LOCALE)
-        private owlDateTimeLocale: string,
-        platform: Platform
-    ) {
+    constructor() {
+        const platform = inject(Platform);
+
         super();
+        const owlDateTimeLocale = this.owlDateTimeLocale;
+
         super.setLocale(owlDateTimeLocale);
 
         // IE does its own time zone correction, so we disable this on IE.

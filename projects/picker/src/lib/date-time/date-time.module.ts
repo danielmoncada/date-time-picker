@@ -23,21 +23,42 @@ import { OwlDateTimeInlineComponent } from './date-time-inline.component';
 import { OwlDialogModule } from '../dialog/dialog.module';
 import { optionsProviders } from './options-provider';
 
+/**
+ * @deprecated Use `provideOwlDateTime()` instead. This module will be removed in v21.0.0.
+ *
+ * Migration guide:
+ * ```typescript
+ * // Before (NgModule approach):
+ * import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+ *
+ * @NgModule({
+ *   imports: [OwlDateTimeModule, OwlNativeDateTimeModule]
+ * })
+ * export class AppModule { }
+ *
+ * // After (Standalone/Provider approach):
+ * import { provideOwlDateTime, provideOwlNativeDateTime } from '@danielmoncada/angular-datetime-picker';
+ *
+ * // For standalone app:
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideOwlDateTime(),
+ *     provideOwlNativeDateTime()
+ *   ]
+ * });
+ *
+ * // For existing NgModule app:
+ * @NgModule({
+ *   providers: [
+ *     provideOwlDateTime(),
+ *     provideOwlNativeDateTime()
+ *   ]
+ * })
+ * export class AppModule { }
+ * ```
+ */
 @NgModule({
-    imports: [CommonModule, OverlayModule, OwlDialogModule, A11yModule],
-    exports: [
-        OwlCalendarComponent,
-        OwlTimerComponent,
-        OwlDateTimeTriggerDirective,
-        OwlDateTimeInputDirective,
-        OwlDateTimeComponent,
-        OwlDateTimeInlineComponent,
-        OwlMultiYearViewComponent,
-        OwlYearViewComponent,
-        OwlMonthViewComponent,
-    ],
-    declarations: [
-        OwlDateTimeTriggerDirective,
+    imports: [CommonModule, OverlayModule, OwlDialogModule, A11yModule, OwlDateTimeTriggerDirective,
         OwlDateTimeInputDirective,
         OwlDateTimeComponent,
         OwlDateTimeContainerComponent,
@@ -49,7 +70,17 @@ import { optionsProviders } from './options-provider';
         OwlCalendarComponent,
         OwlCalendarBodyComponent,
         NumberFixedLenPipe,
+        OwlDateTimeInlineComponent],
+    exports: [
+        OwlCalendarComponent,
+        OwlTimerComponent,
+        OwlDateTimeTriggerDirective,
+        OwlDateTimeInputDirective,
+        OwlDateTimeComponent,
         OwlDateTimeInlineComponent,
+        OwlMultiYearViewComponent,
+        OwlYearViewComponent,
+        OwlMonthViewComponent,
     ],
     providers: [
         OwlDateTimeIntl,

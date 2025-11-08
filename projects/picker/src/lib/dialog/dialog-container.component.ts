@@ -2,18 +2,7 @@
  * dialog-container.component
  */
 
-import {
-    ChangeDetectorRef,
-    Component,
-    ComponentRef,
-    ElementRef,
-    EmbeddedViewRef,
-    EventEmitter,
-    Inject,
-    OnInit,
-    Optional,
-    ViewChild,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ComponentRef, ElementRef, EmbeddedViewRef, EventEmitter, OnInit, ViewChild, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {
     animate,
@@ -47,40 +36,28 @@ const zoomFadeInFrom = {
 @Component({
     selector: 'owl-dialog-container',
     templateUrl: './dialog-container.component.html',
-    standalone: false,
     animations: [
         trigger('slideModal', [
-            transition(
-                'void => enter',
-                [
-                    style(zoomFadeInFrom),
-                    animate('300ms cubic-bezier(0.35, 0, 0.25, 1)', style('*')),
-                    animate(
-                        '150ms',
-                        keyframes([
-                            style({ transform: 'scale(1)', offset: 0 }),
-                            style({ transform: 'scale(1.05)', offset: 0.3 }),
-                            style({ transform: 'scale(.95)', offset: 0.8 }),
-                            style({ transform: 'scale(1)', offset: 1.0 }),
-                        ]),
-                    ),
-                    animateChild(),
-                ],
-                {
-                    params: {
-                        x: '0px',
-                        y: '0px',
-                        ox: '50%',
-                        oy: '50%',
-                        scale: 1,
-                    },
+            transition('void => enter', [
+                style(zoomFadeInFrom),
+                animate('300ms cubic-bezier(0.35, 0, 0.25, 1)', style('*')),
+                animate('150ms', keyframes([
+                    style({ transform: 'scale(1)', offset: 0 }),
+                    style({ transform: 'scale(1.05)', offset: 0.3 }),
+                    style({ transform: 'scale(.95)', offset: 0.8 }),
+                    style({ transform: 'scale(1)', offset: 1.0 }),
+                ])),
+                animateChild(),
+            ], {
+                params: {
+                    x: '0px',
+                    y: '0px',
+                    ox: '50%',
+                    oy: '50%',
+                    scale: 1,
                 },
-            ),
-            transition(
-                'enter => exit',
-                [animateChild(), animate(200, style(zoomFadeIn))],
-                { params: { x: '0px', y: '0px', ox: '50%', oy: '50%' } },
-            ),
+            }),
+            transition('enter => exit', [animateChild(), animate(200, style(zoomFadeIn))], { params: { x: '0px', y: '0px', ox: '50%', oy: '50%' } }),
         ]),
     ],
     host: {
@@ -94,11 +71,17 @@ const zoomFadeInFrom = {
         '[attr.aria-describedby]': 'owlDialogContainerAriaDescribedby',
         '[@slideModal]': 'owlDialogContainerAnimation',
     },
+    imports: [CdkPortalOutlet],
 })
 export class OwlDialogContainerComponent
     extends BasePortalOutlet
     implements OnInit
 {
+    private changeDetector = inject(ChangeDetectorRef);
+    private elementRef = inject(ElementRef);
+    private focusTrapFactory = inject(FocusTrapFactory);
+    private document = inject(DOCUMENT, { optional: true })!;
+
     @ViewChild(CdkPortalOutlet, { static: true })
     portalOutlet: CdkPortalOutlet | null = null;
 
@@ -159,17 +142,6 @@ export class OwlDialogContainerComponent
 
     get owlDialogContainerAnimation(): any {
         return { value: this.state, params: this.params };
-    }
-
-    constructor(
-        private changeDetector: ChangeDetectorRef,
-        private elementRef: ElementRef,
-        private focusTrapFactory: FocusTrapFactory,
-        @Optional()
-        @Inject(DOCUMENT)
-        private document: any,
-    ) {
-        super();
     }
 
     public ngOnInit() {}

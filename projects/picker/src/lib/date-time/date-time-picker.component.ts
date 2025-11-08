@@ -3,20 +3,20 @@
  */
 
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentRef,
-  EventEmitter,
-  Inject,
-  InjectionToken,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Output,
-  ViewContainerRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ComponentRef,
+    InjectionToken,
+    Input,
+    NgZone,
+    OnDestroy,
+    OnInit,
+    ViewContainerRef,
+    inject,
+    input,
+    output,
+    EventEmitter
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ComponentPortal } from '@angular/cdk/portal';
@@ -73,19 +73,25 @@ export const OWL_DTPICKER_SCROLL_STRATEGY_PROVIDER = {
     exportAs: 'owlDateTime',
     templateUrl: './date-time-picker.component.html',
     styleUrls: ['./date-time-picker.component.scss'],
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false
 })
 export class OwlDateTimeComponent<T> extends OwlDateTime<T>
     implements OnInit, OnDestroy {
+    overlay = inject(Overlay);
+    private viewContainerRef = inject(ViewContainerRef);
+    private dialogService = inject(OwlDialogService);
+    private ngZone = inject(NgZone);
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected dateTimeAdapter: DateTimeAdapter<T>;
+    protected dateTimeFormats: OwlDateTimeFormats;
+    private document = inject(DOCUMENT, { optional: true })!;
+
     /** Custom class for the picker backdrop. */
-    @Input()
-    public backdropClass: string | string[] = [];
+    public readonly backdropClass = input<string | string[]>([]);
 
     /** Custom class for the picker overlay pane. */
-    @Input()
-    public panelClass: string | string[] = [];
+    public readonly panelClass = input<string | string[]>([]);
 
     /** The date to open the calendar to initially. */
     private _startAt: T | null;
@@ -217,46 +223,39 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
      * The scroll strategy when the picker is open
      * Learn more this from https://material.angular.io/cdk/overlay/overview#scroll-strategies
      * */
-    @Input()
-    public scrollStrategy: ScrollStrategy;
+    public readonly scrollStrategy = input<ScrollStrategy>(undefined);
 
     /**
      * Callback when the picker is closed
      * */
-    @Output()
-    afterPickerClosed = new EventEmitter<any>();
+    readonly afterPickerClosed = output<any>();
 
     /**
      * Callback before the picker is open
      * */
-    @Output()
-    beforePickerOpen = new EventEmitter<any>();
+    readonly beforePickerOpen = output<any>();
 
     /**
      * Callback when the picker is open
      * */
-    @Output()
-    afterPickerOpen = new EventEmitter<any>();
+    readonly afterPickerOpen = output<any>();
 
     /**
      * Emits selected year in multi-year view
      * This doesn't imply a change on the selected date.
      * */
-    @Output()
-    yearSelected = new EventEmitter<T>();
+    readonly yearSelected = output<T>();
 
     /**
      * Emits selected month in year view
      * This doesn't imply a change on the selected date.
      * */
-    @Output()
-    monthSelected = new EventEmitter<T>();
+    readonly monthSelected = output<T>();
 
     /**
      * Emits selected date
      * */
-    @Output()
-    dateSelected = new EventEmitter<T>();
+    readonly dateSelected = output<T>();
 
     /**
      * Emit when the selected value has been confirmed
@@ -336,22 +335,15 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
 
     private readonly defaultScrollStrategy: () => ScrollStrategy;
 
-    constructor(
-        public overlay: Overlay,
-        private viewContainerRef: ViewContainerRef,
-        private dialogService: OwlDialogService,
-        private ngZone: NgZone,
-        protected changeDetector: ChangeDetectorRef,
-        @Optional() protected dateTimeAdapter: DateTimeAdapter<T>,
-        @Inject(OWL_DTPICKER_SCROLL_STRATEGY) defaultScrollStrategy: any,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        protected dateTimeFormats: OwlDateTimeFormats,
-        @Optional()
-        @Inject(DOCUMENT)
-        private document: any
-    ) {
+    constructor() {
+        const dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+        const defaultScrollStrategy = inject(OWL_DTPICKER_SCROLL_STRATEGY);
+        const dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
         super(dateTimeAdapter, dateTimeFormats);
+        this.dateTimeAdapter = dateTimeAdapter;
+        this.dateTimeFormats = dateTimeFormats;
+
         this.defaultScrollStrategy = defaultScrollStrategy;
     }
 
@@ -398,7 +390,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
         }
 
         if (this.document) {
-            this.focusedElementBeforeOpen = this.document.activeElement;
+            this.focusedElementBeforeOpen = this.document.activeElement as HTMLElement;
         }
 
         // reset the picker selected value
@@ -589,12 +581,12 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
                 autoFocus: false,
                 backdropClass: [
                     'cdk-overlay-dark-backdrop',
-                    ...coerceArray(this.backdropClass)
+                    ...coerceArray(this.backdropClass())
                 ],
-                paneClass: ['owl-dt-dialog', ...coerceArray(this.panelClass)],
+                paneClass: ['owl-dt-dialog', ...coerceArray(this.panelClass())],
                 viewContainerRef: this.viewContainerRef,
                 scrollStrategy:
-                    this.scrollStrategy || this.defaultScrollStrategy()
+                    this.scrollStrategy() || this.defaultScrollStrategy()
             }
         );
         this.pickerContainer = this.dialogRef.componentInstance;
@@ -659,10 +651,10 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
             hasBackdrop: true,
             backdropClass: [
                 'cdk-overlay-transparent-backdrop',
-                ...coerceArray(this.backdropClass)
+                ...coerceArray(this.backdropClass())
             ],
-            scrollStrategy: this.scrollStrategy || this.defaultScrollStrategy(),
-            panelClass: ['owl-dt-popup', ...coerceArray(this.panelClass)]
+            scrollStrategy: this.scrollStrategy() || this.defaultScrollStrategy(),
+            panelClass: ['owl-dt-popup', ...coerceArray(this.panelClass())]
         });
 
         this.popupRef = this.overlay.create(overlayConfig);

@@ -2,18 +2,7 @@
  * date-time-inline.component
  */
 
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component, EventEmitter,
-    forwardRef,
-    Inject,
-    Input,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnInit, inject, output, viewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
@@ -42,15 +31,18 @@ export const OWL_DATETIME_VALUE_ACCESSOR: any = {
     host: {
         '[class.owl-dt-inline]': 'owlDTInlineClass'
     },
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false,
-    providers: [OWL_DATETIME_VALUE_ACCESSOR]
+    providers: [OWL_DATETIME_VALUE_ACCESSOR],
+    imports: [OwlDateTimeContainerComponent]
 })
 export class OwlDateTimeInlineComponent<T> extends OwlDateTime<T>
     implements OnInit, ControlValueAccessor {
-    @ViewChild(OwlDateTimeContainerComponent, { static: true })
-    container: OwlDateTimeContainerComponent<T>;
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected dateTimeAdapter: DateTimeAdapter<T>;
+    protected dateTimeFormats: OwlDateTimeFormats;
+
+    readonly container = viewChild(OwlDateTimeContainerComponent);
 
     /**
      * Set the type of the dateTime picker
@@ -227,21 +219,18 @@ export class OwlDateTimeInlineComponent<T> extends OwlDateTime<T>
      * Emits selected year in multi-year view
      * This doesn't imply a change on the selected date.
      * */
-    @Output()
-    yearSelected = new EventEmitter<T>();
+    readonly yearSelected = output<T>();
 
     /**
      * Emits selected month in year view
      * This doesn't imply a change on the selected date.
      * */
-    @Output()
-    monthSelected = new EventEmitter<T>();
+    readonly monthSelected = output<T>();
 
     /**
      * Emits selected date
      * */
-    @Output()
-    dateSelected = new EventEmitter<T>();
+    readonly dateSelected = output<T>();
 
     private _selected: T | null;
     get selected() {
@@ -290,28 +279,28 @@ export class OwlDateTimeInlineComponent<T> extends OwlDateTime<T>
     private onModelChange: Function = () => { };
     private onModelTouched: Function = () => { };
 
-    constructor(
-        protected changeDetector: ChangeDetectorRef,
-        @Optional() protected dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        protected dateTimeFormats: OwlDateTimeFormats
-    ) {
+    constructor() {
+        const dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+        const dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
         super(dateTimeAdapter, dateTimeFormats);
+    
+        this.dateTimeAdapter = dateTimeAdapter;
+        this.dateTimeFormats = dateTimeFormats;
     }
 
     public ngOnInit() {
-        this.container.picker = this;
+        this.container().picker = this;
     }
 
     public writeValue(value: any): void {
         if (this.isInSingleMode) {
             this.value = value;
-            this.container.pickerMoment = value;
+            this.container().pickerMoment = value;
         } else {
             this.values = value;
-            this.container.pickerMoment = this._values[
-                this.container.activeSelectedIndex
+            this.container().pickerMoment = this._values[
+                this.container().activeSelectedIndex
             ];
         }
     }

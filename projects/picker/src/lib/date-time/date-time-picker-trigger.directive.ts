@@ -3,35 +3,27 @@
  */
 
 
-import {
-    AfterContentInit,
-    ChangeDetectorRef,
-    Directive,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Directive, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject, input } from '@angular/core';
 import { OwlDateTimeComponent } from './date-time-picker.component';
 import { merge, of as observableOf, Subscription } from 'rxjs';
 
 @Directive({
     selector: '[owlDateTimeTrigger]',
-    standalone: false,
     host: {
         '(click)': 'handleClickOnHost($event)',
         '[class.owl-dt-trigger-disabled]': 'owlDTTriggerDisabledClass'
     }
 })
 export class OwlDateTimeTriggerDirective<T> implements OnInit, OnChanges, AfterContentInit, OnDestroy {
+    protected changeDetector = inject(ChangeDetectorRef);
 
-    @Input('owlDateTimeTrigger') dtPicker: OwlDateTimeComponent<T>;
+
+    readonly dtPicker = input<OwlDateTimeComponent<T>>(undefined, { alias: "owlDateTimeTrigger" });
 
     private _disabled: boolean;
     @Input()
     get disabled(): boolean {
-        return this._disabled === undefined ? this.dtPicker.disabled : !!this._disabled;
+        return this._disabled === undefined ? this.dtPicker().disabled : !!this._disabled;
     }
 
     set disabled( value: boolean ) {
@@ -43,9 +35,6 @@ export class OwlDateTimeTriggerDirective<T> implements OnInit, OnChanges, AfterC
     }
 
     private stateChanges = Subscription.EMPTY;
-
-    constructor( protected changeDetector: ChangeDetectorRef ) {
-    }
 
     public ngOnInit(): void {
     }
@@ -65,8 +54,9 @@ export class OwlDateTimeTriggerDirective<T> implements OnInit, OnChanges, AfterC
     }
 
     public handleClickOnHost( event: Event ): void {
-        if (this.dtPicker) {
-            this.dtPicker.open();
+        const dtPicker = this.dtPicker();
+        if (dtPicker) {
+            dtPicker.open();
             event.stopPropagation();
         }
     }
@@ -74,11 +64,13 @@ export class OwlDateTimeTriggerDirective<T> implements OnInit, OnChanges, AfterC
     private watchStateChanges(): void {
         this.stateChanges.unsubscribe();
 
-        const inputDisabled = this.dtPicker && this.dtPicker.dtInput ?
-            this.dtPicker.dtInput.disabledChange : observableOf();
+        const dtPicker = this.dtPicker();
+        const inputDisabled = dtPicker && dtPicker.dtInput ?
+            dtPicker.dtInput.disabledChange : observableOf();
 
-        const pickerDisabled = this.dtPicker ?
-            this.dtPicker.disabledChange : observableOf();
+        const dtPickerValue = this.dtPicker();
+        const pickerDisabled = dtPickerValue ?
+            dtPickerValue.disabledChange : observableOf();
 
         this.stateChanges = merge([pickerDisabled, inputDisabled])
             .subscribe(() => {

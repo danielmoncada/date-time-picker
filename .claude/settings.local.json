@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run:*)",
+      "Bash(npx ng build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

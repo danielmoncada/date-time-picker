@@ -9,6 +9,10 @@ import {OWL_DATE_TIME_FORMATS} from '../date-time-format.class';
 import {UnixTimestampDateTimeAdapter} from './unix-timestamp-date-time-adapter.class';
 import {OWL_UNIX_TIMESTAMP_DATE_TIME_FORMATS} from './unix-timestamp-date-time-format.class';
 
+/**
+ * @deprecated Use `provideOwlUnixTimestampDateTime()` instead. This module will be removed in v21.0.0.
+ * @see provideOwlUnixTimestampDateTime
+ */
 @NgModule({
     imports: [PlatformModule],
     providers: [
@@ -18,6 +22,20 @@ import {OWL_UNIX_TIMESTAMP_DATE_TIME_FORMATS} from './unix-timestamp-date-time-f
 export class UnixTimestampDateTimeModule {
 }
 
+/**
+ * @deprecated Use `provideOwlUnixTimestampDateTime()` instead. This module will be removed in v21.0.0.
+ *
+ * Migration guide:
+ * ```typescript
+ * // Before:
+ * import { OwlUnixTimestampDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+ * @NgModule({ imports: [OwlUnixTimestampDateTimeModule] })
+ *
+ * // After:
+ * import { provideOwlUnixTimestampDateTime } from '@danielmoncada/angular-datetime-picker';
+ * providers: [provideOwlUnixTimestampDateTime()]
+ * ```
+ */
 @NgModule({
     imports: [UnixTimestampDateTimeModule],
     providers: [{provide: OWL_DATE_TIME_FORMATS, useValue: OWL_UNIX_TIMESTAMP_DATE_TIME_FORMATS}],

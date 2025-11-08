@@ -2,43 +2,39 @@
  * calendar.component
  */
 
-import {
-    AfterContentInit,
-    AfterViewChecked,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Inject,
-    Input,
-    NgZone,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output
-} from '@angular/core';
+import { AfterContentInit, AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, inject, input, output } from '@angular/core';
 import {OwlDateTimeIntl} from './date-time-picker-intl.service';
 import {DateTimeAdapter} from './adapter/date-time-adapter.class';
 import {OWL_DATE_TIME_FORMATS, OwlDateTimeFormats} from './adapter/date-time-format.class';
 import {DateView, DateViewType, SelectMode} from './date-time.class';
 import {take} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
+import { CdkMonitorFocus } from '@angular/cdk/a11y';
+import { OwlMonthViewComponent } from './calendar-month-view.component';
+import { OwlYearViewComponent } from './calendar-year-view.component';
+import { OwlMultiYearViewComponent } from './calendar-multi-year-view.component';
 
 @Component({
     selector: 'owl-date-time-calendar',
     exportAs: 'owlDateTimeCalendar',
     templateUrl: './calendar.component.html',
     styleUrls: ['./calendar.component.scss'],
-    standalone: false,
     host: {
         '[class.owl-dt-calendar]': 'owlDTCalendarClass'
     },
     preserveWhitespaces: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CdkMonitorFocus, OwlMonthViewComponent, OwlYearViewComponent, OwlMultiYearViewComponent]
 })
 export class OwlCalendarComponent<T>
     implements OnInit, AfterContentInit, AfterViewChecked, OnDestroy {
+    private elmRef = inject(ElementRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private ngZone = inject(NgZone);
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
 
     DateView = DateView;
 
@@ -156,14 +152,15 @@ export class OwlCalendarComponent<T>
     }
 
     get isInSingleMode(): boolean {
-        return this.selectMode === 'single';
+        return this.selectMode() === 'single';
     }
 
     get isInRangeMode(): boolean {
+        const selectMode = this.selectMode();
         return (
-            this.selectMode === 'range' ||
-            this.selectMode === 'rangeFrom' ||
-            this.selectMode === 'rangeTo'
+            selectMode === 'range' ||
+            selectMode === 'rangeFrom' ||
+            selectMode === 'rangeTo'
         );
     }
 
@@ -182,16 +179,7 @@ export class OwlCalendarComponent<T>
         return true;
     }
 
-    constructor(
-        private elmRef: ElementRef,
-        private pickerIntl: OwlDateTimeIntl,
-        private ngZone: NgZone,
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats
-    ) {
+    constructor() {
         this.intlChangesSub = this.pickerIntl.changes.subscribe(() => {
             this.cdRef.markForCheck();
         });
@@ -200,14 +188,12 @@ export class OwlCalendarComponent<T>
     /**
      * Date filter for the month and year view
      * */
-    @Input()
-    dateFilter: (date: T) => boolean;
+    readonly dateFilter = input<(date: T) => boolean>(undefined);
 
     /**
      * Set the first day of week
      */
-    @Input()
-    firstDayOfWeek: number;
+    readonly firstDayOfWeek = input<number>(undefined);
 
     /** The minimum selectable date. */
     private _minDate: T | null;
@@ -218,8 +204,7 @@ export class OwlCalendarComponent<T>
     /** The current picker moment */
     private _pickerMoment: T;
 
-    @Input()
-    selectMode: SelectMode;
+    readonly selectMode = input<SelectMode>(undefined);
 
     /** The currently selected moment. */
     private _selected: T | null;
@@ -229,60 +214,49 @@ export class OwlCalendarComponent<T>
     /**
      * The view that the calendar should start in.
      */
-    @Input()
-    startView: DateViewType = DateView.MONTH;
+    readonly startView = input<DateViewType>(DateView.MONTH);
 
     /**
      * Whether to should only the year and multi-year views.
      */
-    @Input()
-    yearOnly = false;
+    readonly yearOnly = input(false);
 
     /**
      * Whether to show calendar weeks in the calendar
      * */
-    @Input()
-    showCalendarWeeks = false;
+    readonly showCalendarWeeks = input(false);
 
     /**
      * Whether to should only the multi-year view.
      */
-    @Input()
-    multiyearOnly = false;
+    readonly multiyearOnly = input(false);
 
     /**
      * Whether to hide dates in other months at the start or end of the current month.
      * */
-    @Input()
-    hideOtherMonths: boolean;
+    readonly hideOtherMonths = input<boolean>(undefined);
 
     /** Emits when the currently picker moment changes. */
-    @Output()
-    pickerMomentChange = new EventEmitter<T>();
+    readonly pickerMomentChange = output<T>();
 
     /** Emits when the selected date changes. */
-    @Output()
-    readonly dateClicked = new EventEmitter<T>();
+    readonly dateClicked = output<T>();
 
     /** Emits when the currently selected date changes. */
-    @Output()
-    readonly selectedChange = new EventEmitter<T>();
+    readonly selectedChange = output<T>();
 
     /** Emits when any date is selected. */
-    @Output()
-    readonly userSelection = new EventEmitter<void>();
+    readonly userSelection = output<void>();
 
     /**
      * Emits the selected year. This doesn't imply a change on the selected date
      * */
-    @Output()
-    readonly yearSelected = new EventEmitter<T>();
+    readonly yearSelected = output<T>();
 
     /**
      * Emits the selected month. This doesn't imply a change on the selected date
      * */
-    @Output()
-    readonly monthSelected = new EventEmitter<T>();
+    readonly monthSelected = output<T>();
 
     private _currentView: DateViewType;
 
@@ -299,9 +273,10 @@ export class OwlCalendarComponent<T>
      * Date filter for the month and year view
      */
     public dateFilterForViews = (date: T) => {
+        const dateFilter = this.dateFilter();
         return (
             !!date &&
-            (!this.dateFilter || this.dateFilter(date)) &&
+            (!dateFilter || dateFilter(date)) &&
             (!this.minDate ||
                 this.dateTimeAdapter.compare(date, this.minDate) >= 0) &&
             (!this.maxDate ||
@@ -313,7 +288,7 @@ export class OwlCalendarComponent<T>
     }
 
     public ngAfterContentInit(): void {
-        this._currentView = this.startView;
+        this._currentView = this.startView();
     }
 
     public ngAfterViewChecked() {
@@ -335,9 +310,9 @@ export class OwlCalendarComponent<T>
         if (this._currentView === DateView.MONTH) {
             nextView = DateView.MULTI_YEARS;
         } else {
-            if (this.multiyearOnly) {
+            if (this.multiyearOnly()) {
                 nextView = DateView.MULTI_YEARS;
-            } else if (this.yearOnly) {
+            } else if (this.yearOnly()) {
                 nextView = this._currentView === DateView.YEAR ? DateView.MULTI_YEARS : DateView.YEAR;
             } else {
                 nextView = DateView.MONTH;
@@ -390,9 +365,11 @@ export class OwlCalendarComponent<T>
         view: DateViewType
     ): void {
         this.handlePickerMomentChange(date);
-        if ((!this.yearOnly && !this.multiyearOnly) ||
-            (this.multiyearOnly && (view !== DateView.MONTH && view !== DateView.YEAR)) ||
-            (this.yearOnly && view !== DateView.MONTH)) {
+        const multiyearOnly = this.multiyearOnly();
+        const yearOnly = this.yearOnly();
+        if ((!yearOnly && !multiyearOnly) ||
+            (multiyearOnly && (view !== DateView.MONTH && view !== DateView.YEAR)) ||
+            (yearOnly && view !== DateView.MONTH)) {
             this.currentView = view;
         } else {
             this.dateSelected(date);
@@ -414,6 +391,7 @@ export class OwlCalendarComponent<T>
     }
 
     public userSelected(): void {
+        // TODO: The 'emit' function requires a mandatory void argument
         this.userSelection.emit();
     }
 

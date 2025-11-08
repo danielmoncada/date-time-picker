@@ -40,13 +40,10 @@ const JAN = 0,
 describe('OwlMonthViewComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [OwlNativeDateTimeModule, OwlDateTimeModule],
-            declarations: [
-                StandardMonthViewComponent,
-                MonthViewWithDateFilterComponent
-            ],
-            providers: [OwlDateTimeIntl]
-        }).compileComponents();
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule, StandardMonthViewComponent,
+        MonthViewWithDateFilterComponent],
+    providers: [OwlDateTimeIntl]
+}).compileComponents();
     });
 
     describe('standard month view', () => {
@@ -365,12 +362,12 @@ describe('OwlMonthViewComponent', () => {
 });
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-month-view
                 [(selected)]="selected"
                 [(pickerMoment)]="pickerMoment"></owl-date-time-month-view>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class StandardMonthViewComponent {
     selected = new Date(2018, JAN, 10);
@@ -378,12 +375,12 @@ class StandardMonthViewComponent {
 }
 
 @Component({
-    standalone: false,
     template: `
         <owl-date-time-month-view
                 [(pickerMoment)]="pickerMoment"
                 [dateFilter]="dateFilter"></owl-date-time-month-view>
-    `
+    `,
+    imports: [OwlNativeDateTimeModule, OwlDateTimeModule]
 })
 class MonthViewWithDateFilterComponent {
     pickerMoment = new Date(2018, JAN, 1);

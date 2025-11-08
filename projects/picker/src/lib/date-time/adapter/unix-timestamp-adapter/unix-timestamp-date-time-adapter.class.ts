@@ -2,7 +2,7 @@
  * unix-timestamp-date-time-adapter.class
  */
 
-import {Inject, Injectable, Optional} from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {DateTimeAdapter, OWL_DATE_TIME_LOCALE} from '../date-time-adapter.class';
 import {Platform} from '@angular/cdk/platform';
 import {range} from '../../../utils/array.utils';
@@ -11,16 +11,17 @@ import {DEFAULT_DATE_NAMES, DEFAULT_DAY_OF_WEEK_NAMES, DEFAULT_MONTH_NAMES, SUPP
 
 @Injectable()
 export class UnixTimestampDateTimeAdapter extends DateTimeAdapter<number> {
+	private owlDateTimeLocale = inject(OWL_DATE_TIME_LOCALE, { optional: true })!;
+
 	public firstMonthOfTheYear: number = 0;
 	public firstDayOfTheWeek: number = 0;
     
-    constructor(
-        @Optional()
-        @Inject(OWL_DATE_TIME_LOCALE)
-        private owlDateTimeLocale: string,
-        platform: Platform
-    ) {
+    constructor() {
+        const platform = inject(Platform);
+
         super();
+        const owlDateTimeLocale = this.owlDateTimeLocale;
+
         super.setLocale(owlDateTimeLocale);
 
         // IE does its own time zone correction, so we disable this on IE.

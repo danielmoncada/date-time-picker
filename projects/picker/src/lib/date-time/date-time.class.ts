@@ -1,7 +1,7 @@
 /**
  * date-time.class
  */
-import {EventEmitter, Inject, Input, Optional, Directive} from '@angular/core';
+import {EventEmitter, Inject, Input, Optional, Directive, input, OutputEmitterRef} from '@angular/core';
 import {
     coerceBooleanProperty,
     coerceNumberProperty
@@ -59,26 +59,22 @@ export abstract class OwlDateTime<T> {
     /**
      * The view that the calendar should start in.
      */
-    @Input()
-    startView: DateViewType = DateView.MONTH;
+    readonly startView = input<DateViewType>(DateView.MONTH);
 
     /**
      * Whether to show calendar weeks in the calendar
      * */
-    @Input()
-    showCalendarWeeks = false;
+    readonly showCalendarWeeks = input(false);
 
     /**
      * Whether to should only the year and multi-year views.
      */
-    @Input()
-    yearOnly = false;
+    readonly yearOnly = input(false);
 
     /**
      * Whether to should only the multi-year view.
      */
-    @Input()
-    multiyearOnly = false;
+    readonly multiyearOnly = input(false);
 
     /**
      * Hours to change per step
@@ -183,11 +179,11 @@ export abstract class OwlDateTime<T> {
 
     abstract select(date: T | T[]): void;
 
-    abstract yearSelected: EventEmitter<T>;
+    abstract yearSelected: OutputEmitterRef<T>;
 
-    abstract monthSelected: EventEmitter<T>;
+    abstract monthSelected: OutputEmitterRef<T>;
 
-    abstract dateSelected: EventEmitter<T>;
+    abstract dateSelected: OutputEmitterRef<T>;
 
     abstract selectYear(normalizedYear: T): void;
 
