@@ -141,6 +141,37 @@ import {
           }
         </div>
       </section>
+
+      <!-- Test Issue #229: null end date -->
+      <section class="demo-section">
+        <h3>🐛 Test: Null End Date (Issue #229)</h3>
+        <p class="hint">Select only start date and confirm. End date should remain null, not 1/1/1970.</p>
+        <div class="input-group">
+          <label for="test-range">Test range picker:</label>
+          <input
+            id="test-range"
+            [(ngModel)]="testRange"
+            [selectMode]="'range'"
+            [owlDateTime]="dt6"
+            [owlDateTimeTrigger]="dt6"
+            placeholder="Select range">
+          <owl-date-time #dt6 [pickerMode]="'dialog'"></owl-date-time>
+          <div class="selected-value">
+            <div><strong>Raw value:</strong> {{ testRange() | json }}</div>
+            @if (testRange()[0]) {
+              <div><strong>Start:</strong> {{ testRange()[0] | date:'medium' }}</div>
+            }
+            @if (testRange()[1]) {
+              <div><strong>End:</strong> {{ testRange()[1] | date:'medium' }}</div>
+            } @else if (testRange()[0]) {
+              <div><strong>End:</strong> null (correct!)</div>
+            }
+            @if (isEpochDate(testRange()[1])) {
+              <div class="error"><strong>⚠️ BUG: End date is set to epoch (1/1/1970) instead of null!</strong></div>
+            }
+          </div>
+        </div>
+      </section>
     </div>
   `,
   styles: [`
@@ -233,6 +264,15 @@ import {
       padding-top: 0.5rem;
       border-top: 1px solid #c8e6c9;
     }
+
+    .error {
+      background: #ffebee;
+      color: #c62828;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      border-left: 3px solid #c62828;
+    }
   `]
 })
 export class RangeSelectionComponent {
@@ -240,6 +280,7 @@ export class RangeSelectionComponent {
   dateTimeRange = signal<Date[]>([]);
   rangeFrom = signal<Date[]>([]);
   rangeTo = signal<Date[]>([]);
+  testRange = signal<Date[]>([]);
 
   // Pre-filled with last 7 days
   prefilledRange = signal<Date[]>([
@@ -250,5 +291,14 @@ export class RangeSelectionComponent {
   calculateDays(from: Date, to: Date): number {
     const diffTime = Math.abs(to.getTime() - from.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  isEpochDate(date: Date | null | undefined): boolean {
+    if (!date) return false;
+    // Check if date is Jan 1, 1970 00:00:00 UTC (epoch)
+    const epochTime = new Date(1970, 0, 1).getTime();
+    const dateTime = date.getTime();
+    // Allow for timezone differences - check if it's within 24 hours of epoch
+    return Math.abs(dateTime - epochTime) < 24 * 60 * 60 * 1000;
   }
 }
