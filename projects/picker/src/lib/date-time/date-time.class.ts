@@ -191,12 +191,23 @@ export abstract class OwlDateTime<T> {
 
     abstract selectDate(normalizedDate: T): void;
 
-    get formatString(): string {
-        return this.pickerType === 'both'
-            ? this.dateTimeFormats.fullPickerInput
-            : this.pickerType === 'calendar'
-                ? this.dateTimeFormats.datePickerInput
-                : this.dateTimeFormats.timePickerInput;
+    get formatString(): any {
+        if (this.pickerType === 'both') {
+            // If showSecondsTimer is enabled, add seconds to the format
+            if (this.showSecondsTimer && typeof this.dateTimeFormats.fullPickerInput === 'object') {
+                return { ...this.dateTimeFormats.fullPickerInput, second: 'numeric' };
+            }
+            return this.dateTimeFormats.fullPickerInput;
+        } else if (this.pickerType === 'calendar') {
+            return this.dateTimeFormats.datePickerInput;
+        } else {
+            // pickerType === 'timer'
+            // If showSecondsTimer is enabled, add seconds to the format
+            if (this.showSecondsTimer && typeof this.dateTimeFormats.timePickerInput === 'object') {
+                return { ...this.dateTimeFormats.timePickerInput, second: 'numeric' };
+            }
+            return this.dateTimeFormats.timePickerInput;
+        }
     }
 
     /**
