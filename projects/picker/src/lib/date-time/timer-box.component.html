@@ -36,6 +36,7 @@
     <input
         class="owl-dt-timer-input"
         maxlength="2"
+        inputmode="numeric"
         [value]="displayValue"
         (keydown.arrowup)="!upBtnDisabled() && upBtnClicked()"
         (keydown.arrowdown)="!downBtnDisabled() && downBtnClicked()"
