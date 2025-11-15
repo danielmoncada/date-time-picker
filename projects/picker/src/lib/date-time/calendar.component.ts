@@ -2,12 +2,11 @@
  * calendar.component
  */
 
-import { AfterContentInit, AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, inject, input, output } from '@angular/core';
+import { AfterContentInit, AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, afterNextRender, inject, input, output, Injector } from '@angular/core';
 import {OwlDateTimeIntl} from './date-time-picker-intl.service';
 import {DateTimeAdapter} from './adapter/date-time-adapter.class';
 import {OWL_DATE_TIME_FORMATS, OwlDateTimeFormats} from './adapter/date-time-format.class';
 import {DateView, DateViewType, SelectMode} from './date-time.class';
-import {take} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import { CdkMonitorFocus } from '@angular/cdk/a11y';
 import { OwlMonthViewComponent } from './calendar-month-view.component';
@@ -30,7 +29,7 @@ export class OwlCalendarComponent<T>
     implements OnInit, AfterContentInit, AfterViewChecked, OnDestroy {
     private elmRef = inject(ElementRef);
     private pickerIntl = inject(OwlDateTimeIntl);
-    private ngZone = inject(NgZone);
+    private injector = inject(Injector);
     private cdRef = inject(ChangeDetectorRef);
     private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
     private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
@@ -417,16 +416,13 @@ export class OwlCalendarComponent<T>
      * Focus to the host element
      * */
     public focusActiveCell() {
-        this.ngZone.runOutsideAngular(() => {
-            this.ngZone.onStable
-                .asObservable()
-                .pipe(take(1))
-                .subscribe(() => {
-                    this.elmRef.nativeElement
-                        .querySelector('.owl-dt-calendar-cell-active')
-                        .focus();
-                });
-        });
+        afterNextRender(() => {
+            const activeCell = this.elmRef.nativeElement
+                .querySelector('.owl-dt-calendar-cell-active');
+            if (activeCell) {
+                activeCell.focus();
+            }
+        }, { injector: this.injector });
     }
 
     public selectYearInMultiYearView(normalizedYear: T): void {

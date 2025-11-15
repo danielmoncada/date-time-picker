@@ -2,9 +2,8 @@
  * calendar-body.component
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, NgZone, OnInit, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, afterNextRender, inject, input, output, Injector } from '@angular/core';
 import { SelectMode } from './date-time.class';
-import { take } from 'rxjs/operators';
 import { NgClass } from '@angular/common';
 
 export class CalendarCell {
@@ -32,7 +31,7 @@ export class CalendarCell {
 })
 export class OwlCalendarBodyComponent implements OnInit {
     private elmRef = inject(ElementRef);
-    private ngZone = inject(NgZone);
+    private injector = inject(Injector);
 
     /**
      * The cell number of the active cell in the table.
@@ -163,15 +162,12 @@ export class OwlCalendarBodyComponent implements OnInit {
      * Focus to a active cell
      * */
     public focusActiveCell(): void {
-        this.ngZone.runOutsideAngular(() => {
-            this.ngZone.onStable
-                .asObservable()
-                .pipe(take(1))
-                .subscribe(() => {
-                    this.elmRef.nativeElement
-                        .querySelector('.owl-dt-calendar-cell-active')
-                        .focus();
-                });
-        });
+        afterNextRender(() => {
+            const activeCell = this.elmRef.nativeElement
+                .querySelector('.owl-dt-calendar-cell-active');
+            if (activeCell) {
+                activeCell.focus();
+            }
+        }, { injector: this.injector });
     }
 }

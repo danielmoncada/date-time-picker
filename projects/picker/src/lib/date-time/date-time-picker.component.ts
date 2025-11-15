@@ -9,14 +9,15 @@ import {
     ComponentRef,
     InjectionToken,
     Input,
-    NgZone,
     OnDestroy,
     OnInit,
     ViewContainerRef,
+    afterNextRender,
     inject,
     input,
     output,
-    EventEmitter
+    EventEmitter,
+    Injector
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ComponentPortal } from '@angular/cdk/portal';
@@ -81,7 +82,7 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
     overlay = inject(Overlay);
     private viewContainerRef = inject(ViewContainerRef);
     private dialogService = inject(OwlDialogService);
-    private ngZone = inject(NgZone);
+    private injector = inject(Injector);
     protected changeDetector = inject(ChangeDetectorRef);
     protected dateTimeAdapter: DateTimeAdapter<T>;
     protected dateTimeFormats: OwlDateTimeFormats;
@@ -622,12 +623,9 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
             this.pickerContainer = componentRef.instance;
 
             // Update the position once the calendar has rendered.
-            this.ngZone.onStable
-                .asObservable()
-                .pipe(take(1))
-                .subscribe(() => {
-                    this.popupRef.updatePosition();
-                });
+            afterNextRender(() => {
+                this.popupRef.updatePosition();
+            }, { injector: this.injector });
 
             this.pickerBeforeOpenedStreamSub = this.pickerContainer.beforePickerOpenedStream
                 .pipe(take(1))

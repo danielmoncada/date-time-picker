@@ -199,6 +199,44 @@ export class YourAppModule {}
 
 If you prefer to disable animation effects, use `NoopAnimationsModule` instead.
 
+## Zoneless Support
+
+This library fully supports Angular's **zoneless mode** (experimental in Angular 18+). You can run your application without zone.js for improved performance and reduced bundle size.
+
+### Enabling Zoneless Mode
+
+In your `main.ts`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import {
+  provideOwlDateTime,
+  provideOwlNativeDateTime
+} from '@danielmoncada/angular-datetime-picker';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideExperimentalZonelessChangeDetection(), // Enable zoneless mode
+    provideAnimations(),
+    provideOwlDateTime(),
+    provideOwlNativeDateTime(),
+    //...
+  ]
+});
+```
+
+### Benefits of Zoneless Mode
+
+- **Better Performance**: Eliminates zone.js overhead and monkey-patching
+- **Smaller Bundle Size**: Removes zone.js dependency (~15KB)
+- **Predictable Change Detection**: Explicit control over when change detection runs
+- **Modern Architecture**: Aligns with Angular's future direction
+
+The date-time picker will work seamlessly in both zoned and zoneless applications without any code changes.
+
 ## Choose a date implementation
 
 The date-time picker was built to be date implementation agnostic.

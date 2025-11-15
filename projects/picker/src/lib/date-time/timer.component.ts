@@ -2,10 +2,9 @@
  * timer.component
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnInit, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, afterNextRender, inject, input, output, Injector } from '@angular/core';
 import { OwlDateTimeIntl } from './date-time-picker-intl.service';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
-import { take } from 'rxjs/operators';
 import { OwlTimerBoxComponent } from './timer-box.component';
 
 @Component({
@@ -22,7 +21,7 @@ import { OwlTimerBoxComponent } from './timer-box.component';
     imports: [OwlTimerBoxComponent]
 })
 export class OwlTimerComponent<T> implements OnInit {
-    private ngZone = inject(NgZone);
+    private injector = inject(Injector);
     private elmRef = inject(ElementRef);
     private pickerIntl = inject(OwlDateTimeIntl);
     private cdRef = inject(ChangeDetectorRef);
@@ -177,14 +176,9 @@ export class OwlTimerComponent<T> implements OnInit {
      * Focus to the host element
      * */
     public focus() {
-        this.ngZone.runOutsideAngular(() => {
-            this.ngZone.onStable
-                .asObservable()
-                .pipe(take(1))
-                .subscribe(() => {
-                    this.elmRef.nativeElement.focus();
-                });
-        });
+        afterNextRender(() => {
+            this.elmRef.nativeElement.focus();
+        }, { injector: this.injector });
     }
 
     /**
