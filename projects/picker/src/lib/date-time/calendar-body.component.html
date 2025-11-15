@@ -1,4 +1,4 @@
-@for (row of rows; track row; let rowIndex = $index) {
+@for (row of rows(); track row; let rowIndex = $index) {
     <tr role="row">
         @for (item of row; track item; let colIndex = $index) {
             <td
@@ -15,18 +15,18 @@
                 [class.owl-dt-calendar-cell-range-to]="isRangeTo(item.value)"
                 [attr.aria-label]="item.ariaLabel"
                 [attr.aria-disabled]="!item.enabled || null"
-                [attr.aria-current]="item.value === todayValue ? 'date' : null"
+                [attr.aria-current]="item.value === todayValue() ? 'date' : null"
                 [attr.aria-selected]="isSelected(item.value)"
-                [style.width.%]="100 / numCols"
-                [style.paddingTop.%]="(50 * cellRatio) / numCols"
-                [style.paddingBottom.%]="(50 * cellRatio) / numCols"
+                [style.width.%]="100 / numCols()"
+                [style.paddingTop.%]="(50 * cellRatio()) / numCols()"
+                [style.paddingBottom.%]="(50 * cellRatio()) / numCols()"
                 (click)="selectCell(item)"
             >
                 <span
                     class="owl-dt-calendar-cell-content"
                     [ngClass]="{
                         'owl-dt-calendar-cell-out': item.out,
-                        'owl-dt-calendar-cell-today': item.value === todayValue,
+                        'owl-dt-calendar-cell-today': item.value === todayValue(),
                         'owl-dt-calendar-cell-selected': isSelected(item.value),
                     }"
                 >

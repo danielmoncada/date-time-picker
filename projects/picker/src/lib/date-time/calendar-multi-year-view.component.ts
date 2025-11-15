@@ -2,18 +2,7 @@
  * calendar-multi-year-view.component
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectionStrategy, ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, output, viewChild } from '@angular/core';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
 import { CalendarCell, OwlCalendarBodyComponent } from './calendar-body.component';
 import { SelectMode } from './date-time.class';
@@ -39,12 +28,17 @@ import { OptionsTokens, Options } from './options-provider';
         '[class.owl-dt-calendar-view]': 'owlDTCalendarView',
         '[class.owl-dt-calendar-multi-year-view]': 'owlDTCalendarMultiYearView'
     },
-    standalone: false,
     preserveWhitespaces: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [OwlCalendarBodyComponent],
 })
 
 export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
+    private cdRef = inject(ChangeDetectorRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private options = inject(OptionsTokens.multiYear);
+
 
     /**
      * The select mode of the picker;
@@ -206,21 +200,21 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
     /**
      * Callback to invoke when a new month is selected
      * */
-    @Output() readonly change = new EventEmitter<T>();
+    readonly change = output<T>();
 
     /**
      * Emits the selected year. This doesn't imply a change on the selected date
      * */
-    @Output() readonly yearSelected = new EventEmitter<T>();
+    readonly yearSelected = output<T>();
 
     /** Emits when any date is activated. */
-    @Output() readonly pickerMomentChange: EventEmitter<T> = new EventEmitter<T>();
+    readonly pickerMomentChange = output<T>();
 
     /** Emits when use keyboard enter to select a calendar cell */
-    @Output() readonly keyboardEnter: EventEmitter<any> = new EventEmitter<any>();
+    readonly keyboardEnter = output<void>();
 
     /** The body of calendar table */
-    @ViewChild(OwlCalendarBodyComponent, { static: true }) calendarBodyElm: OwlCalendarBodyComponent;
+    readonly calendarBodyElm = viewChild(OwlCalendarBodyComponent);
 
     get owlDTCalendarView(): boolean {
         return true;
@@ -228,12 +222,6 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
 
     get owlDTCalendarMultiYearView(): boolean {
         return true;
-    }
-
-    constructor( private cdRef: ChangeDetectorRef,
-                 private pickerIntl: OwlDateTimeIntl,
-                 @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-                 @Inject(OptionsTokens.multiYear) private options: any) {
     }
 
     public ngOnInit() {
@@ -380,7 +368,7 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
 
             case ENTER:
                 this.selectYear(this.dateTimeAdapter.getYear(this._pickerMoment));
-                this.keyboardEnter.emit();
+                this.keyboardEnter.emit(undefined);
                 break;
 
             default:
@@ -460,6 +448,6 @@ export class OwlMultiYearViewComponent<T> implements OnInit, AfterContentInit {
     }
 
     private focusActiveCell() {
-        this.calendarBodyElm.focusActiveCell();
+        this.calendarBodyElm().focusActiveCell();
     }
 }

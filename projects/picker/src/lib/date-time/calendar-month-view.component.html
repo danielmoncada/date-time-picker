@@ -1,4 +1,4 @@
-@if (showCalendarWeeks) {
+@if (showCalendarWeeks()) {
     <ul class="week-number">
         @for (week of weekNumbers; track week) {
             <li>
@@ -9,8 +9,8 @@
 }
 <table
     class="owl-dt-calendar-table owl-dt-calendar-month-table"
-    [ngClass]="{ 'owl-calendar-weeks': showCalendarWeeks }"
-    [class.owl-dt-calendar-only-current-month]="hideOtherMonths"
+    [ngClass]="{ 'owl-calendar-weeks': showCalendarWeeks() }"
+    [class.owl-dt-calendar-only-current-month]="hideOtherMonths()"
 >
     <thead class="owl-dt-calendar-header">
         <tr class="owl-dt-weekdays">
@@ -27,7 +27,7 @@
         <tr>
             <th
                 class="owl-dt-calendar-table-divider"
-                [ngClass]="{ 'owl-calendar-weeks': showCalendarWeeks }"
+                [ngClass]="{ 'owl-calendar-weeks': showCalendarWeeks() }"
                 aria-hidden="true"
                 colspan="7"
             ></th>

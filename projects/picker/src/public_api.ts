@@ -2,11 +2,66 @@
  * picker
  */
 
+// ============================================================================
+// Standalone Provider Functions (Recommended for new projects)
+// ============================================================================
+
+export {
+  provideOwlDateTime,
+  provideOwlDateTimeOptions,
+  owlDateTimeProviders
+} from './lib/date-time/provide-date-time';
+
+export {
+  provideOwlNativeDateTime,
+  provideOwlNativeDateTimeWithFormats,
+  owlNativeDateTimeProviders,
+  owlNativeDateTimeProvidersWithFormats
+} from './lib/date-time/adapter/provide-native-date-time';
+
+export {
+  provideOwlUnixTimestampDateTime,
+  provideOwlUnixTimestampDateTimeWithFormats
+} from './lib/date-time/adapter/unix-timestamp-adapter/provide-unix-timestamp-date-time';
+
+export { provideOwlDialog } from './lib/dialog/provide-dialog';
+
+// ============================================================================
+// NgModules (Deprecated - use provider functions instead)
+// ============================================================================
+
+/**
+ * @deprecated Use `provideOwlDateTime()` instead. Will be removed in v21.0.0.
+ * @example
+ * Before:
+ * ```typescript
+ * import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+ *
+ * @NgModule({
+ *   imports: [OwlDateTimeModule, OwlNativeDateTimeModule]
+ * })
+ * ```
+ * After:
+ * ```typescript
+ * import { provideOwlDateTime, provideOwlNativeDateTime } from '@danielmoncada/angular-datetime-picker';
+ *
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideOwlDateTime(), provideOwlNativeDateTime()]
+ * });
+ * ```
+ */
 export { OwlDateTimeModule } from './lib/date-time/date-time.module';
 
-export { OwlDateTimeIntl } from './lib/date-time/date-time-picker-intl.service';
-
+/**
+ * @deprecated Use `provideOwlNativeDateTime()` instead. Will be removed in v21.0.0.
+ */
 export { OwlNativeDateTimeModule } from './lib/date-time/adapter/native-date-time.module';
+
+// ============================================================================
+// Services, Components, Directives, and Types
+// ============================================================================
+
+export { OwlDateTimeIntl } from './lib/date-time/date-time-picker-intl.service';
 
 export {
   OWL_DATE_TIME_LOCALE_PROVIDER,
@@ -42,8 +97,6 @@ export * from './lib/date-time/calendar-year-view.component';
 export * from './lib/date-time/calendar-month-view.component';
 
 export * from './lib/date-time/calendar.component';
-
-export * from './lib/date-time/timer.component';
 
 export { NativeDateTimeAdapter } from './lib/date-time/adapter/native-date-time-adapter.class';
 

@@ -2,21 +2,10 @@
  * timer.component
  */
 
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    NgZone,
-    OnInit,
-    Optional,
-    Output
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, afterNextRender, inject, input, output, Injector } from '@angular/core';
 import { OwlDateTimeIntl } from './date-time-picker-intl.service';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
-import { take } from 'rxjs/operators';
+import { OwlTimerBoxComponent } from './timer-box.component';
 
 @Component({
     exportAs: 'owlDateTimeTimer',
@@ -24,14 +13,20 @@ import { take } from 'rxjs/operators';
     templateUrl: './timer.component.html',
     styleUrls: ['./timer.component.scss'],
     preserveWhitespaces: false,
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '[class.owl-dt-timer]': 'owlDTTimerClass',
         '[attr.tabindex]': 'owlDTTimeTabIndex'
-    }
+    },
+    imports: [OwlTimerBoxComponent]
 })
 export class OwlTimerComponent<T> implements OnInit {
+    private injector = inject(Injector);
+    private elmRef = inject(ElementRef);
+    private pickerIntl = inject(OwlDateTimeIntl);
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+
     /** The current picker moment */
     private _pickerMoment: T;
     @Input()
@@ -74,32 +69,27 @@ export class OwlTimerComponent<T> implements OnInit {
     /**
      * Whether to show the second's timer
      */
-    @Input()
-    showSecondsTimer: boolean;
+    readonly showSecondsTimer = input<boolean>(undefined);
 
     /**
      * Whether the timer is in hour12 format
      */
-    @Input()
-    hour12Timer: boolean;
+    readonly hour12Timer = input<boolean>(undefined);
 
     /**
      * Hours to change per step
      */
-    @Input()
-    stepHour = 1;
+    readonly stepHour = input(1);
 
     /**
      * Minutes to change per step
      */
-    @Input()
-    stepMinute = 1;
+    readonly stepMinute = input(1);
 
     /**
      * Seconds to change per step
      */
-    @Input()
-    stepSecond = 1;
+    readonly stepSecond = input(1);
 
     get hourValue(): number {
         return this.dateTimeAdapter.getHours(this.pickerMoment);
@@ -113,7 +103,7 @@ export class OwlTimerComponent<T> implements OnInit {
     get hourBoxValue(): number {
         let hours = this.hourValue;
 
-        if (!this.hour12Timer) {
+        if (!this.hour12Timer()) {
             return hours;
         } else {
             if (hours === 0) {
@@ -170,8 +160,7 @@ export class OwlTimerComponent<T> implements OnInit {
             : this.pickerIntl.hour12AMLabel;
     }
 
-    @Output()
-    selectedChange = new EventEmitter<T>();
+    readonly selectedChange = output<T>();
 
     get owlDTTimerClass(): boolean {
         return true;
@@ -181,28 +170,15 @@ export class OwlTimerComponent<T> implements OnInit {
         return -1;
     }
 
-    constructor(
-        private ngZone: NgZone,
-        private elmRef: ElementRef,
-        private pickerIntl: OwlDateTimeIntl,
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>
-    ) {}
-
     public ngOnInit() {}
 
     /**
      * Focus to the host element
      * */
     public focus() {
-        this.ngZone.runOutsideAngular(() => {
-            this.ngZone.onStable
-                .asObservable()
-                .pipe(take(1))
-                .subscribe(() => {
-                    this.elmRef.nativeElement.focus();
-                });
-        });
+        afterNextRender(() => {
+            this.elmRef.nativeElement.focus();
+        }, { injector: this.injector });
     }
 
     /**
@@ -210,9 +186,10 @@ export class OwlTimerComponent<T> implements OnInit {
      * We need this to handle the hour value when the timer is in hour12 mode
      * */
     public setHourValueViaInput(hours: number): void {
-        if (this.hour12Timer && this.isPM && hours >= 1 && hours <= 11) {
+        const hour12Timer = this.hour12Timer();
+        if (hour12Timer && this.isPM && hours >= 1 && hours <= 11) {
             hours = hours + 12;
-        } else if (this.hour12Timer && !this.isPM && hours === 12) {
+        } else if (hour12Timer && !this.isPM && hours === 12) {
             hours = 0;
         }
 
@@ -261,7 +238,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public upHourEnabled(): boolean {
         return (
             !this.maxDateTime ||
-            this.compareHours(this.stepHour, this.maxDateTime) < 1
+            this.compareHours(this.stepHour(), this.maxDateTime) < 1
         );
     }
 
@@ -271,7 +248,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public downHourEnabled(): boolean {
         return (
             !this.minDateTime ||
-            this.compareHours(-this.stepHour, this.minDateTime) > -1
+            this.compareHours(-this.stepHour(), this.minDateTime) > -1
         );
     }
 
@@ -281,7 +258,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public upMinuteEnabled(): boolean {
         return (
             !this.maxDateTime ||
-            this.compareMinutes(this.stepMinute, this.maxDateTime) < 1
+            this.compareMinutes(this.stepMinute(), this.maxDateTime) < 1
         );
     }
 
@@ -291,7 +268,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public downMinuteEnabled(): boolean {
         return (
             !this.minDateTime ||
-            this.compareMinutes(-this.stepMinute, this.minDateTime) > -1
+            this.compareMinutes(-this.stepMinute(), this.minDateTime) > -1
         );
     }
 
@@ -301,7 +278,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public upSecondEnabled(): boolean {
         return (
             !this.maxDateTime ||
-            this.compareSeconds(this.stepSecond, this.maxDateTime) < 1
+            this.compareSeconds(this.stepSecond(), this.maxDateTime) < 1
         );
     }
 
@@ -311,7 +288,7 @@ export class OwlTimerComponent<T> implements OnInit {
     public downSecondEnabled(): boolean {
         return (
             !this.minDateTime ||
-            this.compareSeconds(-this.stepSecond, this.minDateTime) > -1
+            this.compareSeconds(-this.stepSecond(), this.minDateTime) > -1
         );
     }
 

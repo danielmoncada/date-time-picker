@@ -2,20 +2,7 @@
  * calendar-year-view.component
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject, output, viewChild } from '@angular/core';
 import {
     CalendarCell,
     OwlCalendarBodyComponent
@@ -50,12 +37,16 @@ const MONTHS_PER_ROW = 3;
     host: {
         '[class.owl-dt-calendar-view]': 'owlDTCalendarView'
     },
-    standalone: false,
     preserveWhitespaces: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [OwlCalendarBodyComponent]
 })
 export class OwlYearViewComponent<T>
     implements OnInit, AfterContentInit, OnDestroy {
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     /**
      * The select mode of the picker;
      * */
@@ -208,38 +199,27 @@ export class OwlYearViewComponent<T>
     /**
      * Callback to invoke when a new month is selected
      * */
-    @Output()
-    readonly change = new EventEmitter<T>();
+    readonly change = output<T>();
 
     /**
      * Emits the selected year. This doesn't imply a change on the selected date
      * */
-    @Output()
-    readonly monthSelected = new EventEmitter<T>();
+    readonly monthSelected = output<T>();
 
     /** Emits when any date is activated. */
-    @Output()
-    readonly pickerMomentChange: EventEmitter<T> = new EventEmitter<T>();
+    readonly pickerMomentChange = output<T>();
 
     /** Emits when use keyboard enter to select a calendar cell */
-    @Output()
-    readonly keyboardEnter: EventEmitter<any> = new EventEmitter<any>();
+    readonly keyboardEnter = output<void>();
 
     /** The body of calendar table */
-    @ViewChild(OwlCalendarBodyComponent, { static: true })
-    calendarBodyElm: OwlCalendarBodyComponent;
+    readonly calendarBodyElm = viewChild(OwlCalendarBodyComponent);
 
     get owlDTCalendarView(): boolean {
         return true;
     }
 
-    constructor(
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats
-    ) {
+    constructor() {
         this.monthNames = this.dateTimeAdapter.getMonthNames('short');
     }
 
@@ -379,7 +359,7 @@ export class OwlYearViewComponent<T>
                 this.selectMonth(
                     this.dateTimeAdapter.getMonth(this.pickerMoment)
                 );
-                this.keyboardEnter.emit();
+                this.keyboardEnter.emit(undefined);
                 break;
             default:
                 return;
@@ -544,6 +524,6 @@ export class OwlYearViewComponent<T>
     }
 
     private focusActiveCell() {
-        this.calendarBodyElm.focusActiveCell();
+        this.calendarBodyElm().focusActiveCell();
     }
 }

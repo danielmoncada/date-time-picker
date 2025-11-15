@@ -9,13 +9,10 @@ import { By } from '@angular/platform-browser';
 describe('OwlCalendarBodyComponent', () => {
     beforeEach((() => {
         TestBed.configureTestingModule({
-            declarations: [
-                OwlCalendarBodyComponent,
-
-                // Test components
-                StandardCalendarBodyComponent,
-            ],
-        }).compileComponents();
+    imports: [OwlCalendarBodyComponent,
+        // Test components
+        StandardCalendarBodyComponent],
+}).compileComponents();
     }));
 
     describe('standard CalendarBodyComponent', () => {
@@ -93,9 +90,7 @@ describe('OwlCalendarBodyComponent', () => {
     });
 });
 
-@Component({
-    standalone: false,
-    template: `
+@Component({ template: `
         <table owl-date-time-calendar-body
                [rows]="rows"
                [todayValue]="todayValue"
@@ -103,8 +98,7 @@ describe('OwlCalendarBodyComponent', () => {
                [selectMode]="'single'"
                [activeCell]="activeCell"
                (select)="handleSelect()">
-        </table>`,
-})
+        </table>`, })
 class StandardCalendarBodyComponent {
     rows = [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14]].map(r => r.map(createCell));
     todayValue = 3;

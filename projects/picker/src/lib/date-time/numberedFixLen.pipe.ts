@@ -4,10 +4,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({
-    name: 'numberFixedLen',
-    standalone: false,
-})
+@Pipe({ name: 'numberFixedLen', })
 export class NumberFixedLenPipe implements PipeTransform {
     transform( num: number, len: number ): any {
         const number = Math.floor(num);

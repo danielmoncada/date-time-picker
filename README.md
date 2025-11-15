@@ -25,48 +25,162 @@ This picker is responsive design, so feel free to try it in your desktops, table
 ## How to Use
 
 1.  Install with [npm](https://www.npmjs.com): `npm install @danielmoncada/angular-datetime-picker --save`
+
 2.  Add styles.
     If you are using Angular CLI, you can add this to your styles.css:
     ```css
     @import '@danielmoncada/angular-datetime-picker/assets/style/picker.min.css';
     ```
     If you are not using the Angular CLI, you can include the picker.min.css via a `<link>` element in your index.html.
-3.  Add **OwlDateTimeModule** and **OwlNativeDateTimeModule** to your **@NgModule** like example below
 
-    ```typescript
-    import { NgModule } from '@angular/core';
-    import { BrowserModule } from '@angular/platform-browser';
-    import { MyTestApp } from './my-test-app';
-    import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+3.  **Configure animations (required)** - see [Animation section](#animation) below for details.
 
-    @NgModule({
-        imports: [BrowserModule, OwlDateTimeModule, OwlNativeDateTimeModule],
-        declarations: [MyTestApp],
-        bootstrap: [MyTestApp],
-    })
-    export class MyTestAppModule {}
-    ```
+### Standalone App Configuration (Recommended)
 
-4.  Connecting a picker to an input and a trigger.
-    ```html
-    <input [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" placeholder="Date Time" /> <owl-date-time #dt1></owl-date-time>
-    ```
-    ```html
-    <input [owlDateTime]="dt2" placeholder="Date Time" />
-    <span [owlDateTimeTrigger]="dt2"><i class="fa fa-calendar"></i></span>
-    <owl-date-time #dt2></owl-date-time>
-    ```
-    The examples above are quite basic. The picker has much more features,
-    and you could learn more about those from [demo page](https://danielykpan.github.io/date-time-picker/).
+Add provider functions to your application config in `main.ts`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import {
+  provideOwlDateTime,
+  provideOwlNativeDateTime
+} from '@danielmoncada/angular-datetime-picker';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(),
+    provideOwlDateTime(),
+    provideOwlNativeDateTime(),
+    //...
+  ]
+});
+```
+
+Then in your component, import the picker components:
+
+```typescript
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  OwlDateTimeComponent,
+  OwlDateTimeTriggerDirective,
+  OwlDateTimeInputDirective
+} from '@danielmoncada/angular-datetime-picker';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [
+    FormsModule,
+    OwlDateTimeComponent,
+    OwlDateTimeTriggerDirective,
+    OwlDateTimeInputDirective
+  ],
+  template: `
+    <input
+      [(ngModel)]="selectedDate"
+      [owlDateTime]="dt1"
+      [owlDateTimeTrigger]="dt1"
+      placeholder="Date Time">
+    <owl-date-time #dt1></owl-date-time>
+  `
+})
+export class ExampleComponent {
+  selectedDate = new Date();
+}
+```
+
+### NgModule Configuration (Legacy)
+
+Add **OwlDateTimeModule** and **OwlNativeDateTimeModule** to your **@NgModule**:
+
+```typescript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MyTestApp } from './my-test-app';
+import {
+  OwlDateTimeModule,
+  OwlNativeDateTimeModule
+} from '@danielmoncada/angular-datetime-picker';
+
+@NgModule({
+    imports: [
+      BrowserModule,
+      BrowserAnimationsModule,
+      OwlDateTimeModule,
+      OwlNativeDateTimeModule
+    ],
+    declarations: [MyTestApp],
+    bootstrap: [MyTestApp],
+})
+export class MyTestAppModule {}
+```
+
+### Basic Usage
+
+Connecting a picker to an input and a trigger:
+
+```html
+<input [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" placeholder="Date Time" />
+<owl-date-time #dt1></owl-date-time>
+```
+
+With a separate trigger button:
+
+```html
+<input [owlDateTime]="dt2" placeholder="Date Time" />
+<span [owlDateTimeTrigger]="dt2"><i class="fa fa-calendar"></i></span>
+<owl-date-time #dt2></owl-date-time>
+```
+
+The examples above are quite basic. The picker has much more features,
+and you could learn more about those from [demo page](https://danielykpan.github.io/date-time-picker/).
 
 ## Animation
 
 This picker uses angular animations to improve the user experience,
-therefore you need to install `@angular/animations` and import `BrowserAnimationsModule` to your application.
+therefore you need to install `@angular/animations` and configure animations in your application.
 
 ```
 npm install @angular/animations --save
 ```
+
+### For Standalone Applications (Recommended)
+
+In your `main.ts` or application config, use `provideAnimations()`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(),
+    //...
+  ]
+});
+```
+
+If you prefer to disable animation effects, use `provideNoopAnimations()` instead:
+
+```typescript
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideNoopAnimations(),
+    //...
+  ]
+});
+```
+
+### For NgModule-based Applications (Legacy)
+
+Import `BrowserAnimationsModule` in your app module:
 
 ```typescript
 import { BrowserModule } from '@angular/platform-browser';
@@ -83,7 +197,45 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export class YourAppModule {}
 ```
 
-If you prefer to disable animation effect, use `NoopAnimationsModule` instead.
+If you prefer to disable animation effects, use `NoopAnimationsModule` instead.
+
+## Zoneless Support
+
+This library fully supports Angular's **zoneless mode** (experimental in Angular 18+). You can run your application without zone.js for improved performance and reduced bundle size.
+
+### Enabling Zoneless Mode
+
+In your `main.ts`:
+
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import {
+  provideOwlDateTime,
+  provideOwlNativeDateTime
+} from '@danielmoncada/angular-datetime-picker';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideExperimentalZonelessChangeDetection(), // Enable zoneless mode
+    provideAnimations(),
+    provideOwlDateTime(),
+    provideOwlNativeDateTime(),
+    //...
+  ]
+});
+```
+
+### Benefits of Zoneless Mode
+
+- **Better Performance**: Eliminates zone.js overhead and monkey-patching
+- **Smaller Bundle Size**: Removes zone.js dependency (~15KB)
+- **Predictable Change Detection**: Explicit control over when change detection runs
+- **Modern Architecture**: Aligns with Angular's future direction
+
+The date-time picker will work seamlessly in both zoned and zoneless applications without any code changes.
 
 ## Choose a date implementation
 

@@ -1,7 +1,7 @@
 /**
  * date-time.class
  */
-import {EventEmitter, Inject, Input, Optional, Directive} from '@angular/core';
+import {EventEmitter, Inject, Input, Optional, Directive, input, OutputEmitterRef} from '@angular/core';
 import {
     coerceBooleanProperty,
     coerceNumberProperty
@@ -59,26 +59,22 @@ export abstract class OwlDateTime<T> {
     /**
      * The view that the calendar should start in.
      */
-    @Input()
-    startView: DateViewType = DateView.MONTH;
+    readonly startView = input<DateViewType>(DateView.MONTH);
 
     /**
      * Whether to show calendar weeks in the calendar
      * */
-    @Input()
-    showCalendarWeeks = false;
+    readonly showCalendarWeeks = input(false);
 
     /**
      * Whether to should only the year and multi-year views.
      */
-    @Input()
-    yearOnly = false;
+    readonly yearOnly = input(false);
 
     /**
      * Whether to should only the multi-year view.
      */
-    @Input()
-    multiyearOnly = false;
+    readonly multiyearOnly = input(false);
 
     /**
      * Hours to change per step
@@ -183,11 +179,11 @@ export abstract class OwlDateTime<T> {
 
     abstract select(date: T | T[]): void;
 
-    abstract yearSelected: EventEmitter<T>;
+    abstract yearSelected: OutputEmitterRef<T>;
 
-    abstract monthSelected: EventEmitter<T>;
+    abstract monthSelected: OutputEmitterRef<T>;
 
-    abstract dateSelected: EventEmitter<T>;
+    abstract dateSelected: OutputEmitterRef<T>;
 
     abstract selectYear(normalizedYear: T): void;
 
@@ -195,12 +191,23 @@ export abstract class OwlDateTime<T> {
 
     abstract selectDate(normalizedDate: T): void;
 
-    get formatString(): string {
-        return this.pickerType === 'both'
-            ? this.dateTimeFormats.fullPickerInput
-            : this.pickerType === 'calendar'
-                ? this.dateTimeFormats.datePickerInput
-                : this.dateTimeFormats.timePickerInput;
+    get formatString(): any {
+        if (this.pickerType === 'both') {
+            // If showSecondsTimer is enabled, add seconds to the format
+            if (this.showSecondsTimer && typeof this.dateTimeFormats.fullPickerInput === 'object') {
+                return { ...this.dateTimeFormats.fullPickerInput, second: 'numeric' };
+            }
+            return this.dateTimeFormats.fullPickerInput;
+        } else if (this.pickerType === 'calendar') {
+            return this.dateTimeFormats.datePickerInput;
+        } else {
+            // pickerType === 'timer'
+            // If showSecondsTimer is enabled, add seconds to the format
+            if (this.showSecondsTimer && typeof this.dateTimeFormats.timePickerInput === 'object') {
+                return { ...this.dateTimeFormats.timePickerInput, second: 'numeric' };
+            }
+            return this.dateTimeFormats.timePickerInput;
+        }
     }
 
     /**

@@ -2,20 +2,7 @@
  * calendar-month-view.component
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnDestroy,
-    OnInit,
-    Optional,
-    Output,
-    ViewChild
-} from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject, input, output, viewChild } from '@angular/core';
 import {
     CalendarCell,
     OwlCalendarBodyComponent
@@ -38,7 +25,7 @@ import {
     RIGHT_ARROW,
     UP_ARROW
 } from '@angular/cdk/keycodes';
-import { getLocaleFirstDayOfWeek } from '@angular/common';
+import { getLocaleFirstDayOfWeek, NgClass } from '@angular/common';
 
 const DAYS_PER_WEEK = 7;
 const WEEKS_PER_VIEW = 6;
@@ -48,26 +35,28 @@ const WEEKS_PER_VIEW = 6;
     exportAs: 'owlYearView',
     templateUrl: './calendar-month-view.component.html',
     styleUrls: ['./calendar-month-view.component.scss'],
-    standalone: false,
     host: {
         '[class.owl-dt-calendar-view]': 'owlDTCalendarView'
     },
     preserveWhitespaces: false,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, OwlCalendarBodyComponent]
 })
 export class OwlMonthViewComponent<T>
     implements OnInit, AfterContentInit, OnDestroy {
+    private cdRef = inject(ChangeDetectorRef);
+    private dateTimeAdapter = inject<DateTimeAdapter<T>>(DateTimeAdapter, { optional: true })!;
+    private dateTimeFormats = inject<OwlDateTimeFormats>(OWL_DATE_TIME_FORMATS, { optional: true })!;
+
     /**
      * Whether to hide dates in other months at the start or end of the current month.
      * */
-    @Input()
-    hideOtherMonths = false;
+    readonly hideOtherMonths = input(false);
 
     /**
      * Whether to show calendar weeks in the calendar
      * */
-    @Input()
-    showCalendarWeeks = false;
+    readonly showCalendarWeeks = input(false);
 
     private isDefaultFirstDayOfWeek = true;
 
@@ -281,34 +270,22 @@ export class OwlMonthViewComponent<T>
     /**
      * Callback to invoke when a new date is selected
      * */
-    @Output()
-    readonly selectedChange = new EventEmitter<T | null>();
+    readonly selectedChange = output<T | null>();
 
     /**
      * Callback to invoke when any date is selected.
      * */
-    @Output()
-    readonly userSelection = new EventEmitter<void>();
+    readonly userSelection = output<void>();
 
     /** Emits when any date is activated. */
-    @Output()
-    readonly pickerMomentChange: EventEmitter<T> = new EventEmitter<T>();
+    readonly pickerMomentChange = output<T>();
 
     /** The body of calendar table */
-    @ViewChild(OwlCalendarBodyComponent, { static: true })
-    calendarBodyElm: OwlCalendarBodyComponent;
+    readonly calendarBodyElm = viewChild(OwlCalendarBodyComponent);
 
     get owlDTCalendarView(): boolean {
         return true;
     }
-
-    constructor(
-        private cdRef: ChangeDetectorRef,
-        @Optional() private dateTimeAdapter: DateTimeAdapter<T>,
-        @Optional()
-        @Inject(OWL_DATE_TIME_FORMATS)
-        private dateTimeFormats: OwlDateTimeFormats
-    ) {}
 
     public ngOnInit() {
         this.updateFirstDayOfWeek(this.dateTimeAdapter.getLocale());
@@ -340,7 +317,7 @@ export class OwlMonthViewComponent<T>
         // Cases in which the date would not be selected
         // 1, the calendar cell is NOT enabled (is NOT valid)
         // 2, the selected date is NOT in current picker's month and the hideOtherMonths is enabled
-        if (!cell.enabled || (this.hideOtherMonths && cell.out)) {
+        if (!cell.enabled || (this.hideOtherMonths() && cell.out)) {
             return;
         }
 
@@ -358,6 +335,7 @@ export class OwlMonthViewComponent<T>
         );
 
         this.selectedChange.emit(selected);
+        // TODO: The 'emit' function requires a mandatory void argument
         this.userSelection.emit();
     }
 
@@ -538,7 +516,7 @@ export class OwlMonthViewComponent<T>
                 daysDiff += 1;
             }
             this._days.push(week);
-            if (this.showCalendarWeeks) {
+            if (this.showCalendarWeeks()) {
                 const weekNumber = this.getISOWeek(new Date(week[0].ariaLabel));
                 this.weekNumbers.push(weekNumber);
             }
@@ -678,6 +656,6 @@ export class OwlMonthViewComponent<T>
     }
 
     private focusActiveCell() {
-        this.calendarBodyElm.focusActiveCell();
+        this.calendarBodyElm().focusActiveCell();
     }
 }
