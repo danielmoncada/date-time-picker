@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import {
   OwlDateTimeComponent,
   OwlDateTimeTriggerDirective,
@@ -14,13 +14,14 @@ import {
 @Component({
   selector: 'app-range-selection',
   standalone: true,
-  imports: [
-    FormsModule,
-    DatePipe,
-    OwlDateTimeComponent,
-    OwlDateTimeTriggerDirective,
-    OwlDateTimeInputDirective
-  ],
+    imports: [
+        FormsModule,
+        DatePipe,
+        OwlDateTimeComponent,
+        OwlDateTimeTriggerDirective,
+        OwlDateTimeInputDirective,
+        JsonPipe
+    ],
   template: `
     <div class="demo-container">
       <h2>Range Selection</h2>

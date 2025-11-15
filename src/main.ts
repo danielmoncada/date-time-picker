@@ -7,10 +7,12 @@ import {
   OWL_DATE_TIME_LOCALE
 } from '../projects/picker/src/public_api';
 import { AppComponent } from './app/app.component';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideAnimations(),
+      provideZonelessChangeDetection(),
     // OwlDateTime provider with native date adapter
     provideOwlDateTime(),
     provideOwlNativeDateTime(),
