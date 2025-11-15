@@ -10,8 +10,9 @@ import { DialogConfigComponent } from './demos/dialog-config.component';
 import { LocalizationComponent } from './demos/localization.component';
 import { AdaptersComponent } from './demos/adapters.component';
 import { LazyLocaleProvidersComponent } from './demos/lazy-locale-providers.component';
+import { AutoSelectComponent } from './demos/auto-select.component';
 
-type DemoTab = 'basic' | 'range' | 'inline' | 'advanced' | 'events' | 'modes' | 'options' | 'dialog' | 'localization' | 'adapters' | 'lazy-providers';
+type DemoTab = 'basic' | 'range' | 'inline' | 'advanced' | 'events' | 'modes' | 'options' | 'dialog' | 'localization' | 'adapters' | 'lazy-providers' | 'auto-select';
 
 interface Demo {
   id: DemoTab;
@@ -35,7 +36,8 @@ interface Demo {
     DialogConfigComponent,
     LocalizationComponent,
     AdaptersComponent,
-    LazyLocaleProvidersComponent
+    LazyLocaleProvidersComponent,
+    AutoSelectComponent
   ],
   template: `
     <div class="app-container">
@@ -115,6 +117,9 @@ interface Demo {
           }
           @case ('lazy-providers') {
             <app-lazy-locale-providers />
+          }
+          @case ('auto-select') {
+            <app-auto-select />
           }
         }
       </main>
@@ -443,6 +448,13 @@ export class AppComponent {
       icon: '⚡',
       description: 'Component-level locale providers without global configuration',
       component: LazyLocaleProvidersComponent
+    },
+    {
+      id: 'auto-select',
+      label: 'Auto-Select',
+      icon: '⚡',
+      description: 'Automatic date selection without "OK" button - like inline mode!',
+      component: AutoSelectComponent
     }
   ];
 
