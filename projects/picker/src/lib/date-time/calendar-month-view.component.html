@@ -14,7 +14,7 @@
 >
     <thead class="owl-dt-calendar-header">
         <tr class="owl-dt-weekdays">
-            @for (weekday of weekdays; track weekday) {
+            @for (weekday of weekdays; track weekday.short) {
                 <th
                     [attr.aria-label]="weekday.long"
                     class="owl-dt-weekday"

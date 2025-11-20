@@ -5,22 +5,23 @@
 import {
     AfterContentInit,
     AfterViewInit,
+    AnimationCallbackEvent,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     ElementRef,
+    EventEmitter,
     OnInit,
     Optional,
     ViewChild,
 } from '@angular/core';
-import { AnimationEvent } from '@angular/animations';
 import { OwlDateTimeIntl } from './date-time-picker-intl.service';
 import { OwlCalendarComponent } from './calendar.component';
+import { IDateTimePickerAnimationEvent } from './date-time-picker-animation-event';
 import { OwlTimerComponent } from './timer.component';
 import { DateTimeAdapter } from './adapter/date-time-adapter.class';
 import { OwlDateTime, PickerType } from './date-time.class';
 import { Observable, Subject } from 'rxjs';
-import { owlDateTimePickerAnimations } from './date-time-picker.animations';
 import {
     DOWN_ARROW,
     LEFT_ARROW,
@@ -37,21 +38,16 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     preserveWhitespaces: false,
     standalone: false,
-    animations: [
-        owlDateTimePickerAnimations.transformPicker,
-        owlDateTimePickerAnimations.fadeInPicker,
-    ],
     host: {
-        '(@transformPicker.start)': 'handleContainerAnimationStart($event)',
-        '(@transformPicker.done)': 'handleContainerAnimationDone($event)',
+        '(animate.enter)': 'onAnimateEnter($event)',
+        '(animate.leave)': 'onAnimateLeave($event)',
         '[class.owl-dt-container]': 'owlDTContainerClass',
         '[class.owl-dt-popup-container]': 'owlDTPopupContainerClass',
         '[class.owl-dt-dialog-container]': 'owlDTDialogContainerClass',
         '[class.owl-dt-inline-container]': 'owlDTInlineContainerClass',
         '[class.owl-dt-container-disabled]': 'owlDTContainerDisabledClass',
         '[attr.id]': 'owlDTContainerId',
-        '[@transformPicker]': 'owlDTContainerAnimation',
-    },
+    }
 })
 export class OwlDateTimeContainerComponent<T>
     implements OnInit, AfterContentInit, AfterViewInit
@@ -63,6 +59,9 @@ export class OwlDateTimeContainerComponent<T>
 
     public picker: OwlDateTime<T>;
     public activeSelectedIndex = 0; // The current active SelectedIndex in range select mode (0: 'from', 1: 'to')
+
+    /** Emits when an animation state changes. */
+    public animationStateChanged = new EventEmitter<IDateTimePickerAnimationEvent>();
 
     // retain start and end time
     private retainStartTime: T;
@@ -240,17 +239,24 @@ export class OwlDateTimeContainerComponent<T>
         this.focusPicker();
     }
 
-    public handleContainerAnimationStart(event: AnimationEvent): void {
-        const toState = event.toState;
-        if (toState === 'enter') {
+    public handleContainerAnimationStart(animationName: 'enter' | 'leave'): void {
+        if (animationName === 'enter') {
             this.beforePickerOpened$.next(null);
         }
+        this.animationStateChanged.emit({
+            phaseName: 'start',
+            toState: animationName
+        });
     }
-    public handleContainerAnimationDone(event: AnimationEvent): void {
-        const toState = event.toState;
-        if (toState === 'enter') {
+
+    public handleContainerAnimationDone(animationName: 'enter' | 'leave'): void {
+        if (animationName === 'enter') {
             this.pickerOpened$.next(null);
         }
+        this.animationStateChanged.emit({
+            phaseName: 'done',
+            toState: animationName
+        });
     }
 
     public dateSelected(date: T): void {
@@ -386,6 +392,49 @@ export class OwlDateTimeContainerComponent<T>
 
             default:
                 return;
+        }
+    }
+
+    protected onAnimateEnter(event: AnimationCallbackEvent): void {
+        this.handleContainerAnimationStart('enter');
+        const duration = this.parseCssVariableDuration(event.target, '--container-enter-animation-duration');
+        if (duration === 0) {
+            this.handleContainerAnimationDone('enter');
+            event.animationComplete();
+        } else {
+            const animation = event.target.animate([
+                { opacity: 0, transform: 'scaleY(0)' },
+                { opacity: 1, transform: 'scaleY(1)' }
+            ], {
+                duration: duration ?? 400,
+                easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)',
+                fill: 'forwards'
+            });
+            animation.finished.then(() => {
+                this.handleContainerAnimationDone('enter');
+                event.animationComplete();
+            });
+        }
+    }
+
+    protected onAnimateLeave(event: AnimationCallbackEvent): void {
+        this.handleContainerAnimationStart('leave');
+        const duration = this.parseCssVariableDuration(event.target, '--container-leave-animation-duration');
+        if (duration === 0) {
+            this.handleContainerAnimationDone('leave');
+            event.animationComplete();
+        } else {
+            event.target.animate([
+                { opacity: 1 },
+                { opacity: 0 }
+            ], {
+                duration: duration ?? 100,
+                easing: 'linear',
+                fill: 'forwards'
+            }).finished.then(() => {
+                this.handleContainerAnimationDone('leave');
+                event.animationComplete();
+            });
         }
     }
 
@@ -565,5 +614,23 @@ export class OwlDateTimeContainerComponent<T>
         } else if (this.timer) {
             this.timer.focus();
         }
+    }
+
+    private parseCssVariableDuration(el: Element, cssVariableName: string) {
+        const durationStr = getComputedStyle(el).getPropertyValue(cssVariableName).trim();
+
+        // Convert to ms
+        let duration: number | undefined = undefined;
+        if (durationStr.endsWith('ms')) {
+            duration = parseFloat(durationStr);
+        } else if (durationStr.endsWith('s')) {
+            duration = parseFloat(durationStr) * 1000;
+        } else if (durationStr) {
+            duration = parseFloat(durationStr);
+            if (isNaN(duration)) {
+                duration = undefined;
+            }
+        }
+        return duration;
     }
 }
