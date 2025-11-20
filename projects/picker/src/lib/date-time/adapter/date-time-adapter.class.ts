@@ -83,6 +83,11 @@ export abstract class DateTimeAdapter<T> {
     abstract getSeconds(date: T): number;
 
     /**
+     * Get the milliseconds of the given date
+     */
+    abstract getMilliseconds(date: T): number;
+
+    /**
      * Get the milliseconds timestamp of the given date
      */
     abstract getTime(date: T): number;
@@ -180,6 +185,11 @@ export abstract class DateTimeAdapter<T> {
     abstract setSeconds(date: T, amount: number): T;
 
     /**
+     * Set the milliseconds to the given date.
+     */
+    abstract setMilliseconds(date: T, amount: number): T;
+
+    /**
      * Creates a date with the given year, month, date, hour, minute and second. Does not allow over/under-flow of the
      * month and date.
      */
@@ -191,6 +201,15 @@ export abstract class DateTimeAdapter<T> {
         hours: number,
         minutes: number,
         seconds: number
+    ): T;
+    abstract createDate(
+        year: number,
+        month: number,
+        date: number,
+        hours: number,
+        minutes: number,
+        seconds: number,
+        milliseconds: number
     ): T;
 
     /**

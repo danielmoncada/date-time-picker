@@ -82,6 +82,10 @@ export class NativeDateTimeAdapter extends DateTimeAdapter<Date> {
         return date.getSeconds();
     }
 
+    public getMilliseconds(date: Date): number {
+        return date.getMilliseconds();
+    }
+
     public getTime(date: Date): number {
         return date.getTime();
     }
@@ -259,15 +263,22 @@ export class NativeDateTimeAdapter extends DateTimeAdapter<Date> {
         return result;
     }
 
+    public setMilliseconds(date: Date, amount: number): Date {
+        const result = this.clone(date);
+        result.setMilliseconds(amount);
+        return result;
+    }
+
     public createDate(
         year: number,
         month: number,
         date: number,
         hours: number = 0,
         minutes: number = 0,
-        seconds: number = 0
+        seconds: number = 0,
+        milliseconds: number = 0
     ): Date {
-        return createDate(year, month, date, hours, minutes, seconds);
+        return createDate(year, month, date, hours, minutes, seconds, milliseconds);
     }
 
     public clone(date: Date): Date {
@@ -277,7 +288,8 @@ export class NativeDateTimeAdapter extends DateTimeAdapter<Date> {
             this.getDate(date),
             this.getHours(date),
             this.getMinutes(date),
-            this.getSeconds(date)
+            this.getSeconds(date),
+            this.getMilliseconds(date)
         );
     }
 

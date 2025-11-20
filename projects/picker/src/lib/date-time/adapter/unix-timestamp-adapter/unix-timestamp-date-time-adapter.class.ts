@@ -108,9 +108,10 @@ export class UnixTimestampDateTimeAdapter extends DateTimeAdapter<number> {
         date: number,
         hours: number = 0,
         minutes: number = 0,
-        seconds: number = 0
+        seconds: number = 0,
+        milliseconds: number = 0
     ): number {
-        return createDate(year, month, date, hours, minutes, seconds).getTime();
+        return createDate(year, month, date, hours, minutes, seconds, milliseconds).getTime();
     }
 
     differenceInCalendarDays(dateLeft: number, dateRight: number): number {
@@ -239,6 +240,10 @@ export class UnixTimestampDateTimeAdapter extends DateTimeAdapter<number> {
         return new Date(date).getSeconds();
     }
 
+    getMilliseconds(date: number): number {
+        return new Date(date).getMilliseconds();
+    }
+
     getTime(date: number): number {
         return date;
     }
@@ -317,6 +322,12 @@ export class UnixTimestampDateTimeAdapter extends DateTimeAdapter<number> {
     setSeconds(date: number, amount: number): number {
         const result = new Date(date);
         result.setSeconds(amount);
+        return result.getTime();
+    }
+
+    setMilliseconds(date: number, amount: number): number {
+        const result = new Date(date);
+        result.setMilliseconds(amount);
         return result.getTime();
     }
 

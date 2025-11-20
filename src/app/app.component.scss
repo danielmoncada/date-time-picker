@@ -30,3 +30,36 @@
 main {
   padding: 1rem;
 }
+
+.milliseconds-info {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border-left: 4px solid #155799;
+
+  h3 {
+    margin-top: 0;
+    color: #155799;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  strong {
+    color: #333;
+  }
+}
+
+.demo-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  h4 {
+    margin-top: 0;
+    color: #555;
+  }
+}

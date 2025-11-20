@@ -44,6 +44,19 @@ export abstract class OwlDateTime<T> {
     }
 
     /**
+     * Whether to show the millisecond's timer
+     */
+    private _showMillisecondsTimer = false;
+    @Input()
+    get showMillisecondsTimer(): boolean {
+        return this._showMillisecondsTimer;
+    }
+
+    set showMillisecondsTimer(val: boolean) {
+        this._showMillisecondsTimer = coerceBooleanProperty(val);
+    }
+
+    /**
      * Whether the timer is in hour12 format
      */
     private _hour12Timer = false;
@@ -117,6 +130,19 @@ export abstract class OwlDateTime<T> {
 
     set stepSecond(val: number) {
         this._stepSecond = coerceNumberProperty(val, 1);
+    }
+
+    /**
+     * Milliseconds to change per step
+     */
+    private _stepMillisecond = 1;
+    @Input()
+    get stepMillisecond(): number {
+        return this._stepMillisecond;
+    }
+
+    set stepMillisecond(val: number) {
+        this._stepMillisecond = coerceNumberProperty(val, 1);
     }
 
     /**
