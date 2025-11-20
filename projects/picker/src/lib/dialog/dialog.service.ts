@@ -217,7 +217,7 @@ export class OwlDialogService {
             const contentRef = dialogContainer.attachComponentPortal(
                 new ComponentPortal(componentOrTemplateRef, undefined, injector)
             );
-            dialogRef.componentInstance = contentRef.instance;
+            dialogRef.componentInstance.set(contentRef.instance);
         }
 
         dialogRef

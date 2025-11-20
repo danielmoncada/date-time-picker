@@ -59,32 +59,6 @@ This picker is responsive design, so feel free to try it in your desktops, table
     The examples above are quite basic. The picker has much more features,
     and you could learn more about those from [demo page](https://danielykpan.github.io/date-time-picker/).
 
-## Animation
-
-This picker uses angular animations to improve the user experience,
-therefore you need to install `@angular/animations` and import `BrowserAnimationsModule` to your application.
-
-```
-npm install @angular/animations --save
-```
-
-```typescript
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-@NgModule({
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        //...
-    ],
-    //...
-})
-export class YourAppModule {}
-```
-
-If you prefer to disable animation effect, use `NoopAnimationsModule` instead.
-
 ## Choose a date implementation
 
 The date-time picker was built to be date implementation agnostic.

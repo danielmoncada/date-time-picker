@@ -19,7 +19,6 @@ import {
 } from '@angular/core';
 import { OwlDateTimeInputDirective } from './date-time-picker-input.directive';
 import { UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { OwlDateTimeModule } from './date-time.module';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { OwlNativeDateTimeModule } from './adapter/native-date-time.module';
@@ -64,12 +63,12 @@ describe('OwlDateTimeComponent', () => {
             imports: [
                 FormsModule,
                 OwlDateTimeModule,
-                NoopAnimationsModule,
                 ReactiveFormsModule,
                 ...imports
             ],
             providers,
-            declarations: [component, ...entryComponents]
+            declarations: [component, ...entryComponents],
+            animationsEnabled: true // required for picker container open/close animations
         });
 
         TestBed.overrideModule(BrowserDynamicTestingModule, {
@@ -78,6 +77,16 @@ describe('OwlDateTimeComponent', () => {
 
         return TestBed.createComponent(component);
     }
+
+    beforeEach(() => {
+        spyOn(HTMLElement.prototype, 'animate').and.callFake(() => {
+            return {
+                finished: new Promise(resolve => setTimeout(resolve, 100)), // finish animation after 100ms
+                play: () => {},
+                cancel: () => {}
+            } as any;
+        });
+    });
 
     afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
         container.ngOnDestroy();

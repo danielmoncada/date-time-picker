@@ -1,6 +1,6 @@
-@for (row of rows; track row; let rowIndex = $index) {
+@for (row of rows; track $index; let rowIndex = $index) {
     <tr role="row">
-        @for (item of row; track item; let colIndex = $index) {
+        @for (item of row; track $index; let colIndex = $index) {
             <td
                 class="owl-dt-calendar-cell {{ item.cellClass }}"
                 [tabindex]="isActiveCell(rowIndex, colIndex) ? 0 : -1"

@@ -1,11 +1,12 @@
 /**
  * dialog-ref.class
  */
-import { AnimationEvent } from '@angular/animations';
 import { ESCAPE } from '@angular/cdk/keycodes';
 import { GlobalPositionStrategy, OverlayRef } from '@angular/cdk/overlay';
 import { Location } from '@angular/common';
+import { Signal, signal } from '@angular/core';
 import { Observable, Subject, Subscription, SubscriptionLike, filter, take } from 'rxjs';
+import { IDateTimePickerAnimationEvent } from '../date-time/date-time-picker-animation-event';
 import { DialogPosition } from './dialog-config.class';
 import { OwlDialogContainerComponent } from './dialog-container.component';
 
@@ -27,7 +28,7 @@ export class OwlDialogRef<T> {
     /**
      * The instance of component opened into modal
      * */
-    public componentInstance: T;
+    public componentInstance = signal<T | undefined>(undefined);
 
     /** Whether the user is allowed to close the dialog. */
     public disableClose = true;
@@ -40,7 +41,7 @@ export class OwlDialogRef<T> {
 
         this.container.animationStateChanged
             .pipe(
-                filter(( event: AnimationEvent ) => event.phaseName === 'start' && event.toState === 'enter'),
+                filter(( event: IDateTimePickerAnimationEvent ) => event.phaseName === 'start' && event.toState === 'enter'),
                 take(1)
             )
             .subscribe(() => {
@@ -50,7 +51,7 @@ export class OwlDialogRef<T> {
 
         this.container.animationStateChanged
             .pipe(
-                filter(( event: AnimationEvent ) => event.phaseName === 'done' && event.toState === 'enter'),
+                filter(( event: IDateTimePickerAnimationEvent ) => event.phaseName === 'done' && event.toState === 'enter'),
                 take(1)
             )
             .subscribe(() => {
@@ -60,7 +61,7 @@ export class OwlDialogRef<T> {
 
         this.container.animationStateChanged
             .pipe(
-                filter((event: AnimationEvent) => event.phaseName === 'done' && event.toState === 'exit'),
+                filter((event: IDateTimePickerAnimationEvent) => event.phaseName === 'done' && event.toState === 'leave'),
                 take(1)
             )
             .subscribe(() => {
@@ -68,7 +69,7 @@ export class OwlDialogRef<T> {
                 this.locationChanged.unsubscribe();
                 this._afterClosed$.next(this.result);
                 this._afterClosed$.complete();
-                this.componentInstance = null;
+                this.componentInstance.set(undefined);
             });
 
         this.overlayRef.keydownEvents()
@@ -89,7 +90,7 @@ export class OwlDialogRef<T> {
 
         this.container.animationStateChanged
             .pipe(
-                filter((event: AnimationEvent) => event.phaseName === 'start'),
+                filter(event => event.phaseName === 'start'),
                 take(1)
             )
             .subscribe(() => {
@@ -150,7 +151,7 @@ export class OwlDialogRef<T> {
         return this;
     }
 
-    public isAnimating(): boolean {
+    public isAnimating(): Signal<boolean> {
         return this.container.isAnimating;
     }
 

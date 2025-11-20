@@ -18,7 +18,7 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
   ]
 })
 export class AppComponent {
-  protected readonly currentTab = signal<string>('date-range');
+  protected readonly currentTab = signal<'date-range' | 'date-range-dialog' | 'date-time-inline'>('date-range');
 
   protected selectedDates: [Date, Date] = [
     new Date(Date.now() - ONE_DAY),
