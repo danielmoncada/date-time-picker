@@ -2,9 +2,7 @@
 import { EventEmitter, NgZone } from '@angular/core';
 
 export function dispatchEvent(node: Node | Window, event: Event): Event {
-    if (node) {
-        node.dispatchEvent(event);
-    }
+    node.dispatchEvent(event);
     return event;
 }
 
