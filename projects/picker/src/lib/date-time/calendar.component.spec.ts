@@ -196,7 +196,6 @@ describe('OwlCalendarComponent', () => {
 
                     spyOn(activeCell, 'focus').and.callThrough();
                     fixture.detectChanges();
-                    zone.simulateZoneExit();
 
                     expect(activeCell.focus).not.toHaveBeenCalled();
                 });
@@ -208,13 +207,11 @@ describe('OwlCalendarComponent', () => {
 
                     spyOn(activeCell, 'focus').and.callThrough();
                     fixture.detectChanges();
-                    zone.simulateZoneExit();
 
                     expect(activeCell.focus).not.toHaveBeenCalled();
 
                     calendarInstance.currentView = DateView.MULTI_YEARS;
                     fixture.detectChanges();
-                    zone.simulateZoneExit();
 
                     expect(activeCell.focus).toHaveBeenCalled();
                 });
@@ -303,7 +300,6 @@ describe('OwlCalendarComponent', () => {
 
         beforeEach(() => {
             fixture = TestBed.createComponent(CalendarWithCalendarWeeks);
-            fixture.detectChanges();
 
             const calendarDebugElement = fixture.debugElement.query(
                 By.directive(OwlCalendarComponent)
@@ -312,6 +308,8 @@ describe('OwlCalendarComponent', () => {
 
             calendarInstance = calendarDebugElement.componentInstance;
             testComponent = fixture.componentInstance;
+            
+            fixture.detectChanges();
         });
 
         it('should show calendar weeks when attribute showCalendarWeeks in true', () => {
