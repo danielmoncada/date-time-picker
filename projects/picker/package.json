@@ -1,6 +1,6 @@
 {
     "name": "@danielmoncada/angular-datetime-picker",
-    "version": "20.0.1",
+    "version": "21.0.0",
     "description": "Angular Date Time Picker",
     "keywords": [
         "Angular",
@@ -24,9 +24,9 @@
         "access": "public"
     },
     "peerDependencies": {
-        "@angular/common": "^19.0.0 || ^20.0.0",
-        "@angular/core": "^19.0.0 || ^20.0.0",
-        "@angular/cdk": "^19.0.0 || ^20.0.0"
+        "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0",
+        "@angular/cdk": "^19.0.0 || ^20.0.0 || ^21.0.0"
     },
     "dependencies": {
         "tslib": "^2.6.2"
