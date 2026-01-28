@@ -814,6 +814,9 @@ describe('OwlDateTimeComponent', () => {
 
             it('if startAt value is set, the start time value should be shown in the rangeTo calendar start time', fakeAsync(() => {
                 testComponent.startAt = new Date('1/19/2020, 09:33 AM');
+                fixture.detectChanges();
+                flush();
+
                 testComponent.dateTimePicker.open();
                 fixture.detectChanges();
                 flush();
@@ -833,6 +836,8 @@ describe('OwlDateTimeComponent', () => {
                 testComponent.dates = [new Date(2020, JAN, 2), null];
                 testComponent.endAt = new Date('1/19/2020, 10:55 PM');
                 fixture.detectChanges();
+                fixture.detectChanges();
+                flush();
 
                 testComponent.dateTimePicker.open();
                 fixture.detectChanges();
@@ -848,6 +853,7 @@ describe('OwlDateTimeComponent', () => {
                 dispatchMouseEvent(dateCell, 'click');
                 fixture.detectChanges();
                 flush();
+                fixture.detectChanges();
 
                 const timeCells = containerElement.querySelectorAll<HTMLInputElement>('.owl-dt-timer-input');
 
