@@ -80,7 +80,25 @@ export class OwlTimerBoxComponent implements OnInit, OnDestroy {
             return '';
         }
 
-        return value < 10 ? '0' + value.toString() : value.toString();
+        // Format with leading zeros based on maxLength
+        if (this.maxLength === 3) {
+            // For milliseconds, pad to 3 digits
+            return value.toString().padStart(3, '0');
+        } else {
+            // For other values, pad to 2 digits
+            return value.toString().padStart(2, '0');
+        }
+    }
+
+    get maxLength(): number {
+        // Calculate maxLength based on the max value
+        // For milliseconds (max 999) we need 3 digits
+        // For other values (max 59) we need 2 digits
+        if (this.max >= 100) {
+            return 3;
+        } else {
+            return 2;
+        }
     }
 
     get owlDTTimerBoxClass(): boolean {

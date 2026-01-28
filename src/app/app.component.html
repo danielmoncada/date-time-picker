@@ -1,77 +1,68 @@
 <div class="button-row">
   Select demo:
-  <button
-    (click)="currentTab.set('date-range')"
-    [class.active]="currentTab() === 'date-range'">
-    Date Range
+  <button (click)="currentTab.set('date-range')" [class.active]="currentTab() === 'date-range'">
+    Date Range:
   </button>
-    <button
-        (click)="currentTab.set('date-range-dialog')"
-        [class.active]="currentTab() === 'date-range-dialog'">
-        Date Range (Dialog)
-    </button>
-  <button
-    (click)="currentTab.set('date-time-inline')"
-    [class.active]="currentTab() === 'date-time-inline'">
-    DateTime Range (Inline)
+  <button (click)="currentTab.set('date-time-inline')" [class.active]="currentTab() === 'date-time-inline'">
+    DateTime Range (Inline):
+  </button>
+  <button (click)="currentTab.set('milliseconds-demo')" [class.active]="currentTab() === 'milliseconds-demo'">
+    Milliseconds Demo:
   </button>
 </div>
 
 <main>
   @switch (currentTab()) {
-    @case ('date-range') {
-      <label for="daterange">
-        Datetime range (click, then press 'Set' to modify):
-      </label>
+  @case ('date-range') {
+  <label for="daterange">
+    Datetime range (click, then press 'Set' to modify):
+  </label>
 
-      <input
-        [(ngModel)]="selectedDates"
-        [selectMode]="'range'"
-        [owlDateTimeTrigger]="date_range_component"
-        [owlDateTime]="date_range_component"
-        style="width: 100%; color: cornflowerblue"
-        id="daterange">
+  <input [(ngModel)]="selectedDates" [selectMode]="'range'" [owlDateTimeTrigger]="date_range_component"
+    [owlDateTime]="date_range_component" style="width: 100%; color: cornflowerblue" id="daterange">
 
-      <owl-date-time
-        #date_range_component
-        [startAt]="currentValue"
-        [endAt]="endValue"
-        (afterPickerClosed)="selectedTrigger($event)"
-        (dateSelected)="selectedTrigger($event)">
-      </owl-date-time>
-    }
-
-      @case ('date-range-dialog') {
-          <label for="daterange">
-              Datetime range (click, then press 'Set' to modify):
-          </label>
-
-          <input
-              [(ngModel)]="selectedDates"
-              [selectMode]="'range'"
-              [owlDateTimeTrigger]="date_range_component"
-              [owlDateTime]="date_range_component"
-              style="width: 100%; color: cornflowerblue"
-              id="daterange">
-
-          <owl-date-time
-              #date_range_component
-              [startAt]="currentValue"
-              pickerMode="dialog"
-              [endAt]="endValue"
-              (afterPickerClosed)="selectedTrigger($event)"
-              (dateSelected)="selectedTrigger($event)">
-          </owl-date-time>
-      }
-
-      @case ('date-time-inline') {
-      <owl-date-time-inline
-        [(ngModel)]="selectedDates"
-        [startAt]="currentValue"
-        [endAt]="endValue"
-        selectMode="range"
-        pickerType="both">
-      </owl-date-time-inline>
-    }
+  <owl-date-time #date_range_component [startAt]="currentValue" [endAt]="endValue"
+    (afterPickerClosed)="selectedTrigger($event)" (dateSelected)="selectedTrigger($event)">
+  </owl-date-time>
   }
+
+  @case ('date-time-inline') {
+  <owl-date-time-inline [(ngModel)]="selectedDates" [startAt]="currentValue" [endAt]="endValue" selectMode="range"
+    pickerType="both">
+  </owl-date-time-inline>
+  }
+
+  @case ('milliseconds-demo') {
+  <div class="milliseconds-info">
+    <h3>Demo: Date-Time Picker with Milliseconds</h3>
+    <p>This demo shows the milliseconds timer functionality. You can select dates and times with precision down to the
+      millisecond.</p>
+    <p><strong>Current value:</strong> {{ millisecondsValue | date:'yyyy-MM-dd HH:mm:ss.SSS' }}</p>
+    <p><strong>Milliseconds:</strong> {{ millisecondsValue.getMilliseconds() }}</p>
+    <p><strong>Timestamp:</strong> {{ millisecondsValue.getTime() }}</p>
+  </div>
+
+  <div class="demo-section">
+    <label for="milliseconds-input">
+      <strong>Popup Picker:</strong> Click to open date-time picker with milliseconds
+    </label>
+
+    <input [(ngModel)]="millisecondsValue" [owlDateTimeTrigger]="milliseconds_component"
+      [owlDateTime]="milliseconds_component"
+      style="width: 100%; color: cornflowerblue; margin: 10px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+      id="milliseconds-input">
+
+    <owl-date-time #milliseconds_component [startAt]="millisecondsValue" [showSecondsTimer]="true"
+      [showMillisecondsTimer]="true" pickerType="both" (afterPickerClosed)="millisecondsSelected($event)">
+    </owl-date-time>
+  </div>
+
+  <div class="demo-section">
+    <h4>Inline Picker with Milliseconds:</h4>
+    <owl-date-time-inline [(ngModel)]="millisecondsValue" [showSecondsTimer]="true" [showMillisecondsTimer]="true"
+      pickerType="both">
+    </owl-date-time-inline>
+  </div>
+  }
+}
 </main>

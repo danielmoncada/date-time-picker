@@ -12,7 +12,8 @@ export function createDate(
     date: number,
     hours: number = 0,
     minutes: number = 0,
-    seconds: number = 0
+    seconds: number = 0,
+    milliseconds: number = 0
 ): Date {
     if (month < 0 || month > 11) {
         throw Error(
@@ -44,13 +45,20 @@ export function createDate(
         );
     }
 
+    if (milliseconds < 0 || milliseconds > 999) {
+        throw Error(
+            `Invalid milliseconds "${milliseconds}". Milliseconds has to be between 0 and 999.`
+        );
+    }
+
     const result = createDateWithOverflow(
         year,
         month,
         date,
         hours,
         minutes,
-        seconds
+        seconds,
+        milliseconds
     );
 
     // Check that the date wasn't above the upper bound for the month, causing the month to overflow
@@ -86,9 +94,10 @@ function createDateWithOverflow(
     date: number,
     hours: number = 0,
     minutes: number = 0,
-    seconds: number = 0
+    seconds: number = 0,
+    milliseconds: number = 0
 ): Date {
-    const result = new Date(year, month, date, hours, minutes, seconds);
+    const result = new Date(year, month, date, hours, minutes, seconds, milliseconds);
 
     if (year >= 0 && year < 100) {
         result.setFullYear(result.getFullYear() - 1900);
