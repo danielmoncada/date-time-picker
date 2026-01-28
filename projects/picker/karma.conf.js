@@ -38,12 +38,14 @@ module.exports = function (config) {
         flags: [
           '--no-sandbox',
           '--disable-web-security',
-          '--disable-gpu',
           '--disable-dev-shm-usage',
           '--disable-extensions',
           '--disable-background-timer-throttling',
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
+          '--disable-hang-monitor',
+          '--disable-sync',
+          '--metrics-recording-only',
           '--remote-debugging-port=9222',
           '--headless'
         ]
@@ -57,6 +59,11 @@ module.exports = function (config) {
     // Use different browsers based on environment
     browsers: process.env.CI ? ['ChromeHeadlessCI'] : ['Chrome'],
     singleRun: process.env.CI ? true : false,
-    restartOnFileChange: false
+    restartOnFileChange: false,
+    // Increase timeouts for CI environment (headless Chrome timing issues)
+    browserNoActivityTimeout: 60000,
+    captureTimeout: 90000,
+    browserDisconnectTimeout: 20000,
+    browserDisconnectTolerance: 2
   });
 };
