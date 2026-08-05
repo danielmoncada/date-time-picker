@@ -70,6 +70,11 @@ export class OwlTimerComponent<T> implements OnInit {
     }
 
     private isPM = false; // a flag indicates the current timer moment is in PM or AM
+    /**
+         * Whether to show the millisecond's timer
+         */
+    @Input()
+    showMillisecondsTimer: boolean;
 
     /**
      * Whether to show the second's timer
@@ -100,6 +105,12 @@ export class OwlTimerComponent<T> implements OnInit {
      */
     @Input()
     stepSecond = 1;
+
+    /**
+     * Milliseconds to change per step
+     */
+    @Input()
+    stepMillisecond = 1;
 
     get hourValue(): number {
         return this.dateTimeAdapter.getHours(this.pickerMoment);
@@ -139,6 +150,9 @@ export class OwlTimerComponent<T> implements OnInit {
     get secondValue(): number {
         return this.dateTimeAdapter.getSeconds(this.pickerMoment);
     }
+    get thirdValue(): number {
+        return this.dateTimeAdapter.getMilliseconds(this.pickerMoment);
+    }
 
     get upHourButtonLabel(): string {
         return this.pickerIntl.upHourLabel;
@@ -164,6 +178,14 @@ export class OwlTimerComponent<T> implements OnInit {
         return this.pickerIntl.downSecondLabel;
     }
 
+    get upMillisecondButtonLabel(): string {
+        return this.pickerIntl.upMillisecondLabel;
+    }
+
+    get downMillisecondButtonLabel(): string {
+        return this.pickerIntl.downMillisecondLabel;
+    }
+
     get hour12ButtonLabel(): string {
         return this.isPM
             ? this.pickerIntl.hour12PMLabel
@@ -187,9 +209,9 @@ export class OwlTimerComponent<T> implements OnInit {
         private pickerIntl: OwlDateTimeIntl,
         private cdRef: ChangeDetectorRef,
         @Optional() private dateTimeAdapter: DateTimeAdapter<T>
-    ) {}
+    ) { }
 
-    public ngOnInit() {}
+    public ngOnInit() { }
 
     /**
      * Focus to the host element
@@ -233,6 +255,12 @@ export class OwlTimerComponent<T> implements OnInit {
 
     public setSecondValue(seconds: number): void {
         const m = this.dateTimeAdapter.setSeconds(this.pickerMoment, seconds);
+        this.selectedChange.emit(m);
+        this.cdRef.markForCheck();
+    }
+
+    public setThirdValue(milliseconds: number): void {
+        const m = this.dateTimeAdapter.setMilliseconds(this.pickerMoment, milliseconds);
         this.selectedChange.emit(m);
         this.cdRef.markForCheck();
     }
@@ -316,6 +344,26 @@ export class OwlTimerComponent<T> implements OnInit {
     }
 
     /**
+     * Check if the up millisecond button is enabled
+     */
+    public upMillisecondEnabled(): boolean {
+        return (
+            !this.maxDateTime ||
+            this.compareMilliseconds(this.stepMillisecond, this.maxDateTime) < 1
+        );
+    }
+
+    /**
+     * Check if the down millisecond button is enabled
+     */
+    public downMillisecondEnabled(): boolean {
+        return (
+            !this.minDateTime ||
+            this.compareMilliseconds(-this.stepMillisecond, this.minDateTime) > -1
+        );
+    }
+
+    /**
      * PickerMoment's hour value +/- certain amount and compare it to the give date
      * 1 is after the comparedDate
      * -1 is before the comparedDate
@@ -355,6 +403,22 @@ export class OwlTimerComponent<T> implements OnInit {
         const result = this.dateTimeAdapter.setSeconds(
             this.pickerMoment,
             seconds
+        );
+        return this.dateTimeAdapter.compare(result, comparedDate);
+    }
+
+    /**
+     * PickerMoment's millisecond value +/- certain amount and compare it to the give date
+     * 1 is after the comparedDate
+     * -1 is before the comparedDate
+     * 0 is equal the comparedDate
+     * */
+    private compareMilliseconds(amount: number, comparedDate: T): number {
+        const milliseconds =
+            this.dateTimeAdapter.getMilliseconds(this.pickerMoment) + amount;
+        const result = this.dateTimeAdapter.setMilliseconds(
+            this.pickerMoment,
+            milliseconds
         );
         return this.dateTimeAdapter.compare(result, comparedDate);
     }

@@ -505,6 +505,7 @@ export class OwlDateTimeContainerComponent<T>
                         this.dateTimeAdapter.getHours(this.picker.endAt),
                         this.dateTimeAdapter.getMinutes(this.picker.endAt),
                         this.dateTimeAdapter.getSeconds(this.picker.endAt),
+                        this.dateTimeAdapter.getMilliseconds(this.picker.endAt)
                     );
                 } else if (this.retainEndTime) {
                     to = this.dateTimeAdapter.createDate(
@@ -514,6 +515,7 @@ export class OwlDateTimeContainerComponent<T>
                         this.dateTimeAdapter.getHours(this.retainEndTime),
                         this.dateTimeAdapter.getMinutes(this.retainEndTime),
                         this.dateTimeAdapter.getSeconds(this.retainEndTime),
+                        this.dateTimeAdapter.getMilliseconds(this.retainEndTime)
                     );
                 } else {
                     to = result;
@@ -528,6 +530,7 @@ export class OwlDateTimeContainerComponent<T>
                         this.dateTimeAdapter.getHours(this.picker.startAt),
                         this.dateTimeAdapter.getMinutes(this.picker.startAt),
                         this.dateTimeAdapter.getSeconds(this.picker.startAt),
+                        this.dateTimeAdapter.getMilliseconds(this.picker.startAt)
                     );
                 } else if (this.retainStartTime) {
                     from = this.dateTimeAdapter.createDate(
@@ -537,6 +540,7 @@ export class OwlDateTimeContainerComponent<T>
                         this.dateTimeAdapter.getHours(this.retainStartTime),
                         this.dateTimeAdapter.getMinutes(this.retainStartTime),
                         this.dateTimeAdapter.getSeconds(this.retainStartTime),
+                        this.dateTimeAdapter.getMilliseconds(this.retainStartTime)
                     );
                 } else {
                     from = result;
@@ -582,6 +586,7 @@ export class OwlDateTimeContainerComponent<T>
                 this.dateTimeAdapter.getHours(this.pickerMoment),
                 this.dateTimeAdapter.getMinutes(this.pickerMoment),
                 this.dateTimeAdapter.getSeconds(this.pickerMoment),
+                this.dateTimeAdapter.getMilliseconds(this.pickerMoment)
             );
             result = this.dateTimeAdapter.clampDate(
                 result,

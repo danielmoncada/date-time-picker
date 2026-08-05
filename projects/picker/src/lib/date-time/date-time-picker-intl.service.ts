@@ -20,6 +20,12 @@ export class OwlDateTimeIntl {
     /** A label for the down second button (used by screen readers).  */
     downSecondLabel = 'Minus a second';
 
+    /** A label for the up millisecond button (used by screen readers).  */
+    upMillisecondLabel = 'Add a millisecond';
+
+    /** A label for the down millisecond button (used by screen readers).  */
+    downMillisecondLabel = 'Minus a millisecond';
+
     /** A label for the up minute button (used by screen readers).  */
     upMinuteLabel = 'Add a minute';
 

@@ -42,6 +42,22 @@
         (valueChange)="setSecondValue($event)"
     ></owl-date-time-timer-box>
 }
+@if (showMillisecondsTimer) {
+    <owl-date-time-timer-box
+        [showDivider]="true"
+        [upBtnAriaLabel]="upMillisecondButtonLabel"
+        [downBtnAriaLabel]="downMillisecondButtonLabel"
+        [upBtnDisabled]="!upMillisecondEnabled()"
+        [downBtnDisabled]="!downMillisecondEnabled()"
+        [value]="thirdValue"
+        [min]="0"
+        [max]="999"
+        [step]="stepMillisecond"
+        [inputLabel]="'Millisecond'"
+        (inputChange)="setThirdValue($event)"
+        (valueChange)="setThirdValue($event)"
+    ></owl-date-time-timer-box>
+}
 @if (hour12Timer) {
     <div class="owl-dt-timer-hour12">
         <button

@@ -410,7 +410,8 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
                 this.dateTimeAdapter.getDate(this.selected),
                 this.dateTimeAdapter.getHours(this._startAt),
                 this.dateTimeAdapter.getMinutes(this._startAt),
-                this.dateTimeAdapter.getSeconds(this._startAt)
+                this.dateTimeAdapter.getSeconds(this._startAt),
+                this.dateTimeAdapter.getMilliseconds(this._startAt)
             );
         }
 
