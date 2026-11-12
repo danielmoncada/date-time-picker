@@ -200,6 +200,19 @@ describe('OwlDateTimeComponent', () => {
                 ).not.toBeNull();
             });
 
+            it('should close an open popup when the picker is disabled', fakeAsync(() => {
+                testComponent.dateTimePicker.open();
+                fixture.detectChanges();
+                flush();
+
+                testComponent.disabled = true;
+                fixture.detectChanges();
+                flush();
+
+                expect(testComponent.dateTimePicker.opened).toBe(false);
+                expect(document.querySelector('.owl-dt-container')).toBeNull();
+            }));
+
             it('should close popup when fn close is called', fakeAsync(() => {
                 testComponent.dateTimePicker.open();
                 fixture.detectChanges();
@@ -1642,6 +1655,20 @@ describe('OwlDateTimeComponent', () => {
             afterEach(fakeAsync(() => {
                 testComponent.dateTimePicker.close();
                 fixture.detectChanges();
+            }));
+
+            it('should close an open popup when its form control is disabled', fakeAsync(() => {
+                testComponent.formControl.setValue(new Date(2020, JAN, 1));
+                testComponent.dateTimePicker.open();
+                fixture.detectChanges();
+                flush();
+
+                testComponent.formControl.disable({ emitEvent: false });
+                fixture.detectChanges();
+                flush();
+
+                expect(testComponent.dateTimePicker.opened).toBe(false);
+                expect(testComponent.formControl.value).toEqual(new Date(2020, JAN, 1));
             }));
 
             it('should update dateTimePicker when formControl changes', () => {
