@@ -113,7 +113,7 @@ There are two pre-made modules, users need to import one of them or build your o
 | `stepMinute`        | number                        | Optional | `1`                   | Minutes to change per step.                                                                                                                  |
 | `stepSecond`        | number                        | Optional | `1`                   | Seconds to change per step.                                                                                                                  |
 | `scrollStrategy`    | ScrollStrategy                | Optional | `BlockScrollStrategy` | Define the scroll strategy when the picker is open. Learn more this from https://material.angular.io/cdk/overlay/overview#scroll-strategies. |
-| `disabled`          | boolean                       | Optional | `false`               | When specify to true, it would disable the picker.                                                                                           |
+| `disabled`          | boolean                       | Optional | `false`               | Disables the picker and closes an open popup or dialog.                                                                                           |
 | `backdropClass`     | string/string[]               | Optional | `null`                | Custom class for the picker backdrop.                                                                                                        |
 | `panelClass`        | string/string[]               | Optional | `null`                | Custom class for the picker overlay panel.                                                                                                   |
 

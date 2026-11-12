@@ -191,6 +191,9 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
         value = coerceBooleanProperty(value);
         if (value !== this._disabled) {
             this._disabled = value;
+            if (value) {
+                this.close();
+            }
             this.disabledChange.next(value);
         }
     }
@@ -377,6 +380,11 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
                 }
             }
         );
+        this.dtInputSub.add(input.disabledChange.subscribe(() => {
+            if (this.disabled) {
+                this.close();
+            }
+        }));
     }
 
     public open(): void {
@@ -437,6 +445,10 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
      * Selects the given date
      */
     public select(date: T[] | T): void {
+        if (this.disabled) {
+            return;
+        }
+
         if (Array.isArray(date)) {
             this.selecteds = [...date];
         } else {
@@ -560,6 +572,10 @@ export class OwlDateTimeComponent<T> extends OwlDateTime<T>
      * Confirm the selected value
      */
     public confirmSelect(event?: any): void {
+        if (this.disabled) {
+            return;
+        }
+
         if (this.isInSingleMode) {
             const selected =
                 this.selected || this.startAt || this.dateTimeAdapter.now();
